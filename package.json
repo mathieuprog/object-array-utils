@@ -1,0 +1,25 @@
+{
+  "name": "object-array-utils",
+  "version": "1.0.0",
+  "description": "Utilities for working with arrays and objects",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.12",
+    "@babel/preset-env": "^7.16.11",
+    "jest": "^27.4.7"
+  },
+  "dependencies": {},
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathieuprog/object-array-utils.git"
+  },
+  "author": "Mathieu Decaffmeyer",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/mathieuprog/object-array-utils/issues"
+  },
+  "homepage": "https://github.com/mathieuprog/object-array-utils#readme"
+}

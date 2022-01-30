@@ -1,0 +1,8 @@
+# IntelliJ IDEA
+/.idea/
+*.iml
+
+/node_modules/
+/public/build/
+
+.DS_Store
