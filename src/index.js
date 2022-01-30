@@ -37,10 +37,12 @@ function isArrayOfObjectLiterals(a) {
   return !a.some(o => !isObjectLiteral(o));
 }
 
-function areObjectsEqual(a, b, hooks) {
+function areObjectsEqual(a, b, options = {}) {
   if (!isObject(a) || !isObject(b)) {
     throw new Error('expected objects');
   }
+
+  const { hooks, ignoreProps } = options;
 
   const hookOnCompareObjects = hooks?.onCompareObjects ?? (() => ({}));
   const hookOnCompareObjectProps = hooks?.onCompareObjectProps ?? (() => ({}));
@@ -62,6 +64,13 @@ function areObjectsEqual(a, b, hooks) {
     return str !== '[object Object]' && str === b.toString();
   }
 
+  if (ignoreProps) {
+    ignoreProps.forEach(prop => {
+      delete a[prop];
+      delete b[prop];
+    });
+  }
+
   if (Object.keys(a).length !== Object.keys(b).length) return false;
 
   for (let [key, value] of Object.entries(a)) {
@@ -80,14 +89,14 @@ function areObjectsEqual(a, b, hooks) {
     if (isArray(value) !== isArray(b[key])) return false;
 
     if (isArray(value)) {
-      if (!areArraysEqual(value, b[key])) return false;
+      if (!areArraysEqual(value, b[key], options)) return false;
       continue;
     }
 
     if (isObject(value) !== isObject(b[key])) return false;
 
     if (isObject(value)) {
-      if (!areObjectsEqual(value, b[key])) return false;
+      if (!areObjectsEqual(value, b[key], options)) return false;
       continue;
     }
 
@@ -97,14 +106,14 @@ function areObjectsEqual(a, b, hooks) {
   return true;
 }
 
-function areArraysEqual(a, b, hooks) {
+function areArraysEqual(a, b, options = {}) {
   if (!isArray(a) || !isArray(b)) {
     throw new Error('expected arrays');
   }
 
+  const { hooks } = options;
+
   const hookOnCompareArrays = hooks?.onCompareArrays ?? (() => ({}));
-  const hookOnCompareObjects = hooks?.onCompareObjects ?? (() => ({}));
-  const hookOnCompareObjectProps = hooks?.onCompareObjectProps ?? (() => ({}));
 
   if (a === b) return true;
 
@@ -120,14 +129,14 @@ function areArraysEqual(a, b, hooks) {
 
   for (let value of a) {
     if (isArray(value)) {
-      const index = b.findIndex(e => isArray(e) && areArraysEqual(e, value));
+      const index = b.findIndex(e => isArray(e) && areArraysEqual(e, value, options));
       if (index === -1) return false;
       b.splice(index, 1);
       continue;
     }
 
     if (isObject(value)) {
-      const index = b.findIndex(e => isObject(e) && areObjectsEqual(e, value, hookOnCompareObjects, hookOnCompareObjectProps));
+      const index = b.findIndex(e => isObject(e) && areObjectsEqual(e, value, options));
       if (index === -1) return false;
       b.splice(index, 1);
       continue;
@@ -149,7 +158,7 @@ function hasObjectProp(o, prop) {
   return Object.prototype.hasOwnProperty.call(o, prop);
 }
 
-function isObjectSubset(superObject, subObject) {
+function isObjectSubset(superObject, subObject, options = {}) {
   if (!isObject(superObject) || !isObject(subObject)) {
     throw new Error('expected objects');
   }
@@ -161,6 +170,13 @@ function isObjectSubset(superObject, subObject) {
   if (isObjectInstance(superObject)) {
     const str = superObject.toString();
     return str !== '[object Object]' && str === subObject.toString();
+  }
+
+  const { ignoreProps } = options;
+
+  if (ignoreProps) {
+    subObject = { ...subObject };
+    ignoreProps.forEach(prop => delete subObject[prop]);
   }
 
   if (Object.keys(superObject).length < Object.keys(subObject).length) return false;
@@ -177,20 +193,20 @@ function isObjectSubset(superObject, subObject) {
     if (isObject(superObject[key]) !== isObject(subObject[key])) return false;
 
     if (isObject(superObject[key])) {
-      return isObjectSubset(superObject[key], subObject[key]);
+      return isObjectSubset(superObject[key], subObject[key], options);
     }
 
     if (isArray(superObject[key]) !== isArray(subObject[key])) return false;
 
     if (isArray(superObject[key])) {
-      return isArraySubset(superObject[key], subObject[key]);
+      return isArraySubset(superObject[key], subObject[key], options);
     }
 
     return false;
   });
 }
 
-function isArraySubset(superArray, subArray) {
+function isArraySubset(superArray, subArray, options = {}) {
   if (!isArray(superArray) || !isArray(subArray)) {
     throw new Error('expected arrays');
   }
@@ -204,14 +220,14 @@ function isArraySubset(superArray, subArray) {
 
   for (let value of subArray) {
     if (isArray(value)) {
-      const index = superArray.findIndex(e => isArray(e) && isArraySubset(e, value));
+      const index = superArray.findIndex(e => isArray(e) && isArraySubset(e, value, options));
       if (index === -1) return false;
       superArray.splice(index, 1);
       continue;
     }
 
     if (isObject(value)) {
-      const index = superArray.findIndex(e => isObject(e) && isObjectSubset(e, value));
+      const index = superArray.findIndex(e => isObject(e) && isObjectSubset(e, value, options));
       if (index === -1) return false;
       superArray.splice(index, 1);
       continue;
