@@ -5,6 +5,7 @@
   "scripts": {
     "test": "jest"
   },
+  "type": "module",
   "devDependencies": {
     "@babel/core": "^7.16.12",
     "@babel/preset-env": "^7.16.11",
