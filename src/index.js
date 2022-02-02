@@ -242,12 +242,12 @@ function isArraySubset(superArray, subArray, options = {}) {
 }
 
 function deepFreeze(o) {
-  if (!isObject(o)) {
-    throw new Error('expected object');
+  if (!isObject(o) && !isArray(o)) {
+    throw new Error('expected object or array');
   }
 
   Object.keys(o).forEach(prop => {
-    if (typeof o[prop] === 'object' && !Object.isFrozen(o[prop])) {
+    if ((!isObject(o[prop]) || !isArray(o[prop])) && !Object.isFrozen(o[prop])) {
       deepFreeze(o[prop]);
     }
   });

@@ -1,4 +1,4 @@
-import { areArraysEqual, areObjectsEqual } from './index';
+import { areArraysEqual, areObjectsEqual, deepFreeze } from './index';
 
 test('object equality', () => {
   expect(
@@ -55,4 +55,6 @@ test('array equality', () => {
       [1, 1, 2]
     )
   ).toBeTruthy();
+
+  deepFreeze([1, { b: null, c: { d: [2, 5, 1, 0, {c: 3, d: 4}], e: "world" }, a: "foo" }]);
 });
