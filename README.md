@@ -47,6 +47,10 @@ import { hasObjectProp } from 'object-array-utils';
 
 hasObjectProp({ prop: 1 }, 'prop') // true
 
+import { hasObjectProps } from 'object-array-utils';
+
+hasObjectProps({ prop1: 1, prop2: 2 }, ['prop1', 'prop2']) // true
+
 import { isObjectSubset } from 'object-array-utils';
 
 isObjectSubset({ prop1: 1, prop2: 2 }, { prop1: 1 }) // true
