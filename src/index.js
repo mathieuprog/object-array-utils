@@ -76,7 +76,7 @@ function areObjectsEqual(a, b, options = {}) {
   for (let [key, value] of Object.entries(a)) {
     if (value === b[key]) continue;
 
-    const { eq, ne } = hookOnCompareObjectProps(a, b) ?? {};
+    const { eq, ne } = hookOnCompareObjectProps(key, a, b) ?? {};
     if (eq) return true;
     if (ne) return false;
 
@@ -156,6 +156,10 @@ function hasObjectProp(o, prop) {
   }
 
   return Object.prototype.hasOwnProperty.call(o, prop);
+}
+
+function hasObjectProps(o, props) {
+  return props.every(prop => hasObjectProp(o, prop));
 }
 
 function isObjectSubset(superObject, subObject, options = {}) {
@@ -260,6 +264,7 @@ export {
   areObjectsEqual,
   deepFreeze,
   hasObjectProp,
+  hasObjectProps,
   isArray,
   isArrayOfObjects,
   isArrayOfObjectLiterals,

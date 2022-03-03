@@ -1,4 +1,4 @@
-import { areArraysEqual, areObjectsEqual, deepFreeze } from './index';
+import { areArraysEqual, areObjectsEqual, deepFreeze, hasObjectProps } from './index';
 
 test('object equality', () => {
   expect(
@@ -57,4 +57,11 @@ test('array equality', () => {
   ).toBeTruthy();
 
   deepFreeze([1, { b: null, c: { d: [2, 5, 1, 0, {c: 3, d: 4}], e: "world" }, a: "foo" }]);
+});
+
+test('object has props', () => {
+  expect(hasObjectProps({ foo: 1, bar: 2 }, ['foo'])).toBeTruthy();
+  expect(hasObjectProps({ foo: 1, bar: 2 }, ['bar'])).toBeTruthy();
+  expect(hasObjectProps({ foo: 1, bar: 2 }, ['bar', 'foo'])).toBeTruthy();
+  expect(hasObjectProps({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toBeFalsy();
 });
