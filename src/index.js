@@ -21,6 +21,10 @@ function isArray(a) {
   return !isNullOrUndefined(a) && Array.isArray(a);
 }
 
+function isEmptyArray(a) {
+  return isArray(a) && a.length === 0;
+}
+
 function isArrayOfObjects(a) {
   if (!isArray(a) || a.length === 0) {
     return false;
@@ -269,6 +273,7 @@ export {
   isArrayOfObjects,
   isArrayOfObjectLiterals,
   isArraySubset,
+  isEmptyArray,
   isNullOrUndefined,
   isObject,
   isObjectInstance,

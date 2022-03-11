@@ -25,6 +25,10 @@ import { isArray } from 'object-array-utils';
 
 isArray([1]) // true
 
+import { isEmptyArray } from 'object-array-utils';
+
+isEmptyArray([]) // true
+
 import { isArrayOfObjects } from 'object-array-utils';
 
 isArrayOfObjects([{ prop: 1 }, new Date()]) // true
