@@ -166,6 +166,14 @@ function hasObjectProps(o, props) {
   return props.every(prop => hasObjectProp(o, prop));
 }
 
+function filterProps(o, props) {
+  return props.reduce((newObject, prop) => {
+    return (prop in o)
+      ? { ...newObject, [prop]: o[prop] }
+      : newObject;
+  }, {});
+}
+
 function isObjectSubset(superObject, subObject, options = {}) {
   if (!isObject(superObject) || !isObject(subObject)) {
     throw new Error('expected objects');
@@ -267,6 +275,7 @@ export {
   areArraysEqual,
   areObjectsEqual,
   deepFreeze,
+  filterProps,
   hasObjectProp,
   hasObjectProps,
   isArray,

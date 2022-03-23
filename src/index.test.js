@@ -1,8 +1,9 @@
 import {
   areArraysEqual,
   areObjectsEqual,
-  isEmptyArray,
   deepFreeze,
+  filterProps,
+  isEmptyArray,
   hasObjectProps
 } from './index';
 
@@ -70,6 +71,13 @@ test('hasObjectProps', () => {
   expect(hasObjectProps({ foo: 1, bar: 2 }, ['bar'])).toBeTruthy();
   expect(hasObjectProps({ foo: 1, bar: 2 }, ['bar', 'foo'])).toBeTruthy();
   expect(hasObjectProps({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toBeFalsy();
+});
+
+test('filterProps', () => {
+  expect(filterProps({ foo: 1, bar: 2 }, ['foo'])).toEqual({ foo: 1 });
+  expect(filterProps({ foo: 1, bar: 2 }, ['bar'])).toEqual({ bar: 2 });
+  expect(filterProps({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ foo: 1, bar: 2 });
+  expect(filterProps({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ foo: 1, bar: 2 });
 });
 
 test('isEmptyArray', () => {
