@@ -58,6 +58,12 @@ hasObjectProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop2']) // true
 import { filterProperties } from 'object-array-utils';
 
 filterProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { prop1: 1 }
+filterProperties({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { prop1: 1 }
+
+import { takeProperties } from 'object-array-utils';
+
+takeProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { filtered: { prop1: 1 }, rejected: { prop2: 2 } }
+takeProperties({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { filtered: { prop1: 1 }, rejected: { prop2: 2 } }
 
 import { isObjectSubset } from 'object-array-utils';
 

@@ -166,12 +166,46 @@ function hasObjectProperties(o, props) {
   return props.every(prop => hasObjectProperty(o, prop));
 }
 
-function filterProperties(o, props) {
+function filterProperties(o, arg) {
+  return isArray(arg)
+    ? filterPropsByWhitelist(o, arg)
+    : filterPropsByFun(o, arg);
+}
+
+function filterPropsByWhitelist(o, props) {
   return props.reduce((newObject, prop) => {
     return (prop in o)
       ? { ...newObject, [prop]: o[prop] }
       : newObject;
   }, {});
+}
+
+function filterPropsByFun(o, fun) {
+  const filteredEntries = Object.entries(o).filter(([key, val]) => fun(key, val));
+  return Object.fromEntries(filteredEntries);
+}
+
+function takeProperties(o, arg) {
+  return isArray(arg)
+    ? takePropsByWhitelist(o, arg)
+    : takePropsByFun(o, arg);
+}
+
+function takePropsByWhitelist(o, props) {
+  return Object.keys(o).reduce(({ filtered, rejected }, prop) => {
+    return (props.includes(prop))
+      ? { filtered: { ...filtered, [prop]: o[prop] }, rejected }
+      : { filtered, rejected: { ...rejected, [prop]: o[prop] } }
+  }, { filtered: {}, rejected: {} });
+}
+
+function takePropsByFun(o, fun) {
+  const filteredKeys =
+    Object.entries(o)
+      .filter(([key, val]) => fun(key, val))
+      .map(([key, _]) => key);
+
+  return takePropsByWhitelist(o, filteredKeys);
 }
 
 // https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array/groupBy
@@ -301,5 +335,6 @@ export {
   isObject,
   isObjectInstance,
   isObjectLiteral,
-  isObjectSubset
+  isObjectSubset,
+  takeProperties
 }

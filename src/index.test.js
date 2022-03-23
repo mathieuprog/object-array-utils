@@ -4,7 +4,8 @@ import {
   deepFreeze,
   filterProperties,
   hasObjectProperties,
-  isEmptyArray
+  isEmptyArray,
+  takeProperties
 } from './index';
 
 test('areObjectsEqual', () => {
@@ -73,11 +74,29 @@ test('hasObjectProperties', () => {
   expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toBeFalsy();
 });
 
-test('filterProperties', () => {
+test('filterProperties using whitelist of props', () => {
   expect(filterProperties({ foo: 1, bar: 2 }, ['foo'])).toEqual({ foo: 1 });
   expect(filterProperties({ foo: 1, bar: 2 }, ['bar'])).toEqual({ bar: 2 });
   expect(filterProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ foo: 1, bar: 2 });
   expect(filterProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ foo: 1, bar: 2 });
+});
+
+test('filterProperties using function', () => {
+  expect(filterProperties({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ foo: 1 });
+  expect(filterProperties({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({});
+});
+
+test('takeProperties using whitelist of props', () => {
+  expect(takeProperties({ foo: 1, bar: 2 }, ['foo'])).toEqual({ filtered: { foo: 1 }, rejected: { bar: 2 } });
+  expect(takeProperties({ foo: 1, bar: 2 }, ['bar'])).toEqual({ filtered: { bar: 2 }, rejected: { foo: 1 } });
+  expect(takeProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ filtered: { foo: 1, bar: 2 }, rejected: {} });
+  expect(takeProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ filtered: { foo: 1, bar: 2 }, rejected: {} });
+  expect(takeProperties({ foo: 1, bar: 2 }, ['baz'])).toEqual({ filtered: {}, rejected: { foo: 1, bar: 2 } });
+});
+
+test('takeProperties using function', () => {
+  expect(takeProperties({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ filtered: { foo: 1 }, rejected: { bar: 2 } });
+  expect(takeProperties({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({filtered: {}, rejected: { foo: 3, bar: 2 } });
 });
 
 test('isEmptyArray', () => {
