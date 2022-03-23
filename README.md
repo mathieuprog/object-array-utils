@@ -47,17 +47,17 @@ import { isNullOrUndefined } from 'object-array-utils';
 isNullOrUndefined(null) // true
 isNullOrUndefined(undefined) // true
 
-import { hasObjectProp } from 'object-array-utils';
+import { hasObjectProperty } from 'object-array-utils';
 
-hasObjectProp({ prop: 1 }, 'prop') // true
+hasObjectProperty({ prop: 1 }, 'prop') // true
 
-import { hasObjectProps } from 'object-array-utils';
+import { hasObjectProperties } from 'object-array-utils';
 
-hasObjectProps({ prop1: 1, prop2: 2 }, ['prop1', 'prop2']) // true
+hasObjectProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop2']) // true
 
-import { filterProps } from 'object-array-utils';
+import { filterProperties } from 'object-array-utils';
 
-filterProps({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { prop1: 1 }
+filterProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { prop1: 1 }
 
 import { isObjectSubset } from 'object-array-utils';
 

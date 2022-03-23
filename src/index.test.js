@@ -2,8 +2,8 @@ import {
   areArraysEqual,
   areObjectsEqual,
   deepFreeze,
-  filterProps,
-  hasObjectProps,
+  filterProperties,
+  hasObjectProperties,
   isEmptyArray
 } from './index';
 
@@ -66,18 +66,18 @@ test('areArraysEqual', () => {
   deepFreeze([1, { b: null, c: { d: [2, 5, 1, 0, {c: 3, d: 4}], e: "world" }, a: "foo" }]);
 });
 
-test('hasObjectProps', () => {
-  expect(hasObjectProps({ foo: 1, bar: 2 }, ['foo'])).toBeTruthy();
-  expect(hasObjectProps({ foo: 1, bar: 2 }, ['bar'])).toBeTruthy();
-  expect(hasObjectProps({ foo: 1, bar: 2 }, ['bar', 'foo'])).toBeTruthy();
-  expect(hasObjectProps({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toBeFalsy();
+test('hasObjectProperties', () => {
+  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['foo'])).toBeTruthy();
+  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar'])).toBeTruthy();
+  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toBeTruthy();
+  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toBeFalsy();
 });
 
-test('filterProps', () => {
-  expect(filterProps({ foo: 1, bar: 2 }, ['foo'])).toEqual({ foo: 1 });
-  expect(filterProps({ foo: 1, bar: 2 }, ['bar'])).toEqual({ bar: 2 });
-  expect(filterProps({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ foo: 1, bar: 2 });
-  expect(filterProps({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ foo: 1, bar: 2 });
+test('filterProperties', () => {
+  expect(filterProperties({ foo: 1, bar: 2 }, ['foo'])).toEqual({ foo: 1 });
+  expect(filterProperties({ foo: 1, bar: 2 }, ['bar'])).toEqual({ bar: 2 });
+  expect(filterProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ foo: 1, bar: 2 });
+  expect(filterProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ foo: 1, bar: 2 });
 });
 
 test('isEmptyArray', () => {

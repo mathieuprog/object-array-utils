@@ -46,10 +46,10 @@ function areObjectsEqual(a, b, options = {}) {
     throw new Error('expected objects');
   }
 
-  const { hooks, ignoreProps } = options;
+  const { hooks, ignoreProperties } = options;
 
   const hookOnCompareObjects = hooks?.onCompareObjects ?? (() => ({}));
-  const hookOnCompareObjectProps = hooks?.onCompareObjectProps ?? (() => ({}));
+  const hookOnCompareObjectProperties = hooks?.onCompareObjectProperties ?? (() => ({}));
 
   if (a === b) return true;
 
@@ -68,8 +68,8 @@ function areObjectsEqual(a, b, options = {}) {
     return str !== '[object Object]' && str === b.toString();
   }
 
-  if (ignoreProps) {
-    ignoreProps.forEach(prop => {
+  if (ignoreProperties) {
+    ignoreProperties.forEach(prop => {
       delete a[prop];
       delete b[prop];
     });
@@ -80,11 +80,11 @@ function areObjectsEqual(a, b, options = {}) {
   for (let [key, value] of Object.entries(a)) {
     if (value === b[key]) continue;
 
-    const { eq, ne } = hookOnCompareObjectProps(key, a, b) ?? {};
+    const { eq, ne } = hookOnCompareObjectProperties(key, a, b) ?? {};
     if (eq) return true;
     if (ne) return false;
 
-    if (!hasObjectProp(b, key)) return false;
+    if (!hasObjectProperty(b, key)) return false;
 
     if (!value || !b[key]) return false;
 
@@ -154,7 +154,7 @@ function areArraysEqual(a, b, options = {}) {
   return true;
 }
 
-function hasObjectProp(o, prop) {
+function hasObjectProperty(o, prop) {
   if (!isObject(o)) {
     throw new Error('expected object');
   }
@@ -162,11 +162,11 @@ function hasObjectProp(o, prop) {
   return Object.prototype.hasOwnProperty.call(o, prop);
 }
 
-function hasObjectProps(o, props) {
-  return props.every(prop => hasObjectProp(o, prop));
+function hasObjectProperties(o, props) {
+  return props.every(prop => hasObjectProperty(o, prop));
 }
 
-function filterProps(o, props) {
+function filterProperties(o, props) {
   return props.reduce((newObject, prop) => {
     return (prop in o)
       ? { ...newObject, [prop]: o[prop] }
@@ -202,17 +202,17 @@ function isObjectSubset(superObject, subObject, options = {}) {
     return str !== '[object Object]' && str === subObject.toString();
   }
 
-  const { ignoreProps } = options;
+  const { ignoreProperties } = options;
 
-  if (ignoreProps) {
+  if (ignoreProperties) {
     subObject = { ...subObject };
-    ignoreProps.forEach(prop => delete subObject[prop]);
+    ignoreProperties.forEach(prop => delete subObject[prop]);
   }
 
   if (Object.keys(superObject).length < Object.keys(subObject).length) return false;
 
   return Object.keys(subObject).every(key => {
-    if (!hasObjectProp(superObject, key)) return false;
+    if (!hasObjectProperty(superObject, key)) return false;
 
     if (superObject[key] === subObject[key]) return true;
 
@@ -289,9 +289,9 @@ export {
   areArraysEqual,
   areObjectsEqual,
   deepFreeze,
-  filterProps,
-  hasObjectProp,
-  hasObjectProps,
+  filterProperties,
+  hasObjectProperty,
+  hasObjectProperties,
   isArray,
   isArrayOfObjects,
   isArrayOfObjectLiterals,
