@@ -174,6 +174,20 @@ function filterProps(o, props) {
   }, {});
 }
 
+// https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array/groupBy
+// function groupArrayElementsBy(arrayOfObjects, getKey) {
+//   return arrayOfObjects.reduce(function (resultingObject, object) {
+//     const key = getKey(object);
+
+//     if (!resultingObject[key]) {
+//       resultingObject[key] = [];
+//     }
+//     resultingObject[key].push(object);
+
+//     return resultingObject;
+//   }, {});
+// }
+
 function isObjectSubset(superObject, subObject, options = {}) {
   if (!isObject(superObject) || !isObject(subObject)) {
     throw new Error('expected objects');

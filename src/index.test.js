@@ -3,8 +3,8 @@ import {
   areObjectsEqual,
   deepFreeze,
   filterProps,
-  isEmptyArray,
-  hasObjectProps
+  hasObjectProps,
+  isEmptyArray
 } from './index';
 
 test('areObjectsEqual', () => {
