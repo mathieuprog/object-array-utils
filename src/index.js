@@ -305,6 +305,10 @@ function isArraySubset(superArray, subArray, options = {}) {
   return true;
 }
 
+function isPrimitive(value) {
+  return value !== Object(value);
+}
+
 function deepFreeze(o) {
   if (!isObject(o) && !isArray(o)) {
     throw new Error('expected object or array');
@@ -336,5 +340,6 @@ export {
   isObjectInstance,
   isObjectLiteral,
   isObjectSubset,
+  isPrimitive,
   takeProperties
 }

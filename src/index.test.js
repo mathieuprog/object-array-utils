@@ -5,6 +5,7 @@ import {
   filterProperties,
   hasObjectProperties,
   isEmptyArray,
+  isPrimitive,
   takeProperties
 } from './index';
 
@@ -105,4 +106,21 @@ test('isEmptyArray', () => {
   expect(isEmptyArray(null)).toBeFalsy();
   expect(isEmptyArray(undefined)).toBeFalsy();
   expect(isEmptyArray(1)).toBeFalsy();
+});
+
+test('isPrimitive', () => {
+  expect(isPrimitive([])).toBeFalsy();
+  expect(isPrimitive({})).toBeFalsy();
+  expect(isPrimitive(new Date())).toBeFalsy();
+  expect(isPrimitive(null)).toBeTruthy();
+  expect(isPrimitive(undefined)).toBeTruthy();
+  expect(isPrimitive(1)).toBeTruthy();
+  expect(isPrimitive(new Number(1))).toBeFalsy();
+  expect(isPrimitive('foo')).toBeTruthy();
+  expect(isPrimitive(new String('foo'))).toBeFalsy();
+  expect(isPrimitive(Symbol('foo'))).toBeTruthy();
+  expect(isPrimitive(false)).toBeTruthy();
+  expect(isPrimitive(new Boolean(false))).toBeFalsy();
+  expect(isPrimitive(true)).toBeTruthy();
+  expect(isPrimitive(new Boolean(true))).toBeFalsy();
 });
