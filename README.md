@@ -87,6 +87,17 @@ areArraysEqual([1, { prop1: 1, prop2: 2 }], [{ prop2: 2, prop1: 1 }, 1]) // true
 import { deepFreeze } from 'object-array-utils';
 
 deepFreeze({ foo: 1 })
+
+import { isPrimitive } from 'object-array-utils';
+
+isPrimitive(null) // true
+isPrimitive(undefined) // true
+isPrimitive(1) // true
+isPrimitive('foo') // true
+isPrimitive(false) // true
+isPrimitive([]) // false
+isPrimitive({}) // false
+isPrimitive(new Number(1)) // false
 ```
 
 ## Limitations
