@@ -100,6 +100,7 @@ isPrimitive(false) // true
 isPrimitive([]) // false
 isPrimitive({}) // false
 isPrimitive(new Number(1)) // false
+isPrimitive((x) => x) // false
 ```
 
 ## Limitations
