@@ -101,6 +101,12 @@ isPrimitive([]) // false
 isPrimitive({}) // false
 isPrimitive(new Number(1)) // false
 isPrimitive((x) => x) // false
+
+import { isArrayOfPrimitives } from 'object-array-utils';
+
+isArrayOfPrimitives([1, 'foo']) // true
+isArrayOfPrimitives([new Number(1), 'foo']) // false
+isArrayOfPrimitives([]) // false
 ```
 
 ## Limitations

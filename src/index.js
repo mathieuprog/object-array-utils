@@ -41,6 +41,14 @@ function isArrayOfObjectLiterals(a) {
   return !a.some(o => !isObjectLiteral(o));
 }
 
+function isArrayOfPrimitives(a) {
+  if (!isArray(a) || a.length === 0) {
+    return false;
+  }
+
+  return !a.some(o => !isPrimitive(o));
+}
+
 function areObjectsEqual(a, b, options = {}) {
   if (!isObject(a) || !isObject(b)) {
     throw new Error('expected objects');
@@ -333,6 +341,7 @@ export {
   isArray,
   isArrayOfObjects,
   isArrayOfObjectLiterals,
+  isArrayOfPrimitives,
   isArraySubset,
   isEmptyArray,
   isNullOrUndefined,

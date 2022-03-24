@@ -4,6 +4,7 @@ import {
   deepFreeze,
   filterProperties,
   hasObjectProperties,
+  isArrayOfPrimitives,
   isEmptyArray,
   isPrimitive,
   takeProperties
@@ -123,4 +124,14 @@ test('isPrimitive', () => {
   expect(isPrimitive(new Boolean(false))).toBeFalsy();
   expect(isPrimitive(true)).toBeTruthy();
   expect(isPrimitive(new Boolean(true))).toBeFalsy();
+});
+
+test('isArrayOfPrimitives', () => {
+  expect(isArrayOfPrimitives([])).toBeFalsy();
+  expect(isArrayOfPrimitives([{}])).toBeFalsy();
+  expect(isArrayOfPrimitives([[]])).toBeFalsy();
+  expect(isArrayOfPrimitives([false])).toBeTruthy();
+  expect(isArrayOfPrimitives([false, 'foo', 1])).toBeTruthy();
+  expect(isArrayOfPrimitives([false, new String('foo'), 1])).toBeFalsy();
+  expect(isArrayOfPrimitives(1)).toBeFalsy();
 });
