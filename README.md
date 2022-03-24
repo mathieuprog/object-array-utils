@@ -90,10 +90,12 @@ deepFreeze({ foo: 1 })
 
 import { isPrimitive } from 'object-array-utils';
 
+// https://developer.mozilla.org/docs/Glossary/Primitive
 isPrimitive(null) // true
 isPrimitive(undefined) // true
 isPrimitive(1) // true
 isPrimitive('foo') // true
+isPrimitive(Symbol('foo')) // true
 isPrimitive(false) // true
 isPrimitive([]) // false
 isPrimitive({}) // false
