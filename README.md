@@ -107,6 +107,19 @@ import { isArrayOfPrimitives } from 'object-array-utils';
 isArrayOfPrimitives([1, 'foo']) // true
 isArrayOfPrimitives([new Number(1), 'foo']) // false
 isArrayOfPrimitives([]) // false
+
+import { isArrayOfType } from 'object-array-utils';
+
+isArrayOfType(['foo', 'bar'], 'string') // true
+isArrayOfType(['foo', 1], 'string') // false
+isArrayOfType([1, 2], 'number') // true
+isArrayOfType([], 'string') // false
+
+import { isArrayWhereEvery, isObjectLiteral } from 'object-array-utils';
+
+isArrayWhereEvery([{ foo: 1 }, { bar: 2 }], isObjectLiteral) // true
+isArrayWhereEvery([{ foo: 1 }, new Date()], isObjectLiteral) // false
+isArrayWhereEvery([], isObjectLiteral) // false
 ```
 
 ## Limitations

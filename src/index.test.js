@@ -5,7 +5,10 @@ import {
   filterProperties,
   hasObjectProperties,
   isArrayOfPrimitives,
+  isArrayOfType,
+  isArrayWhereEvery,
   isEmptyArray,
+  isObjectLiteral,
   isPrimitive,
   takeProperties
 } from './index';
@@ -134,4 +137,21 @@ test('isArrayOfPrimitives', () => {
   expect(isArrayOfPrimitives([false, 'foo', 1])).toBeTruthy();
   expect(isArrayOfPrimitives([false, new String('foo'), 1])).toBeFalsy();
   expect(isArrayOfPrimitives(1)).toBeFalsy();
+});
+
+test('isArrayOfType', () => {
+  expect(isArrayOfType([], 'string')).toBeFalsy();
+  expect(isArrayOfType([{}], 'string')).toBeFalsy();
+  expect(isArrayOfType(['foo', 'bar'], 'string')).toBeTruthy();
+  expect(isArrayOfType(['foo', 'bar'], 'number')).toBeFalsy();
+  expect(isArrayOfType([1, 2], 'number')).toBeTruthy();
+  expect(isArrayOfType([1, 'bar'], 'number')).toBeFalsy();
+  expect(isArrayOfType(['foo', 1], 'string')).toBeFalsy();
+});
+
+test('isArrayWhereEvery', () => {
+  expect(isArrayWhereEvery([[], []], isEmptyArray)).toBeTruthy();
+  expect(isArrayWhereEvery([], isEmptyArray)).toBeFalsy();
+  expect(isArrayWhereEvery([{ foo: 1 }, { bar: 2 }], isObjectLiteral)).toBeTruthy();
+  expect(isArrayWhereEvery([{ foo: 1 }, new Date()], isObjectLiteral)).toBeFalsy();
 });

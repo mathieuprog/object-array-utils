@@ -49,6 +49,22 @@ function isArrayOfPrimitives(a) {
   return !a.some(o => !isPrimitive(o));
 }
 
+function isArrayOfType(a, type) {
+  if (!isArray(a) || a.length === 0) {
+    return false;
+  }
+
+  return !a.some(o => typeof o !== type);
+}
+
+function isArrayWhereEvery(a, fun) {
+  if (!isArray(a) || a.length === 0) {
+    return false;
+  }
+
+  return !a.some(o => !fun(o));
+}
+
 function areObjectsEqual(a, b, options = {}) {
   if (!isObject(a) || !isObject(b)) {
     throw new Error('expected objects');
@@ -342,7 +358,9 @@ export {
   isArrayOfObjects,
   isArrayOfObjectLiterals,
   isArrayOfPrimitives,
+  isArrayOfType,
   isArraySubset,
+  isArrayWhereEvery,
   isEmptyArray,
   isNullOrUndefined,
   isObject,
