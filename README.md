@@ -9,6 +9,12 @@ isObjectLiteral({ prop: 1 }) // true
 isObjectLiteral(new Date()) // false
 isObjectLiteral([1]) // false
 
+import { isEmptyObjectLiteral } from 'object-array-utils';
+
+isEmptyObjectLiteral({}) // true
+isEmptyObjectLiteral(new Date()) // false
+isEmptyObjectLiteral([]) // false
+
 import { isObjectInstance } from 'object-array-utils';
 
 isObjectInstance({ prop: 1 }) // false

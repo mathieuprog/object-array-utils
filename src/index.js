@@ -10,6 +10,10 @@ function isObjectLiteral(o) {
   return !isNullOrUndefined(o) && Object.getPrototypeOf(o) === Object.prototype;
 }
 
+function isEmptyObjectLiteral(o) {
+  return isObjectLiteral(o) && Object.keys(o).length === 0;
+}
+
 function isObjectInstance(o) {
   return !isNullOrUndefined(o)
     && !isArray(o)
@@ -362,6 +366,7 @@ export {
   isArraySubset,
   isArrayWhereEvery,
   isEmptyArray,
+  isEmptyObjectLiteral,
   isNullOrUndefined,
   isObject,
   isObjectInstance,
