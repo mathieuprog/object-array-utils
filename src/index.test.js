@@ -10,6 +10,7 @@ import {
   isEmptyArray,
   isEmptyObjectLiteral,
   isObjectLiteral,
+  isObjectLiteralWhereEvery,
   isPrimitive,
   takeProperties
 } from './index';
@@ -155,6 +156,13 @@ test('isArrayWhereEvery', () => {
   expect(isArrayWhereEvery([], isEmptyArray)).toBeFalsy();
   expect(isArrayWhereEvery([{ foo: 1 }, { bar: 2 }], isObjectLiteral)).toBeTruthy();
   expect(isArrayWhereEvery([{ foo: 1 }, new Date()], isObjectLiteral)).toBeFalsy();
+});
+
+test('isObjectLiteralWhereEvery', () => {
+  expect(isObjectLiteralWhereEvery([[], []], isEmptyArray)).toBeFalsy();
+  expect(isObjectLiteralWhereEvery({ foo: [], bar: [] }, isEmptyArray)).toBeTruthy();
+  expect(isObjectLiteralWhereEvery({}, isEmptyObjectLiteral)).toBeFalsy();
+  expect(isObjectLiteralWhereEvery({ foo: { a: 1 }, bar: { b: 2 } }, isObjectLiteral)).toBeTruthy();
 });
 
 test('isEmptyObjectLiteral', () => {

@@ -126,6 +126,11 @@ import { isArrayWhereEvery, isObjectLiteral } from 'object-array-utils';
 isArrayWhereEvery([{ foo: 1 }, { bar: 2 }], isObjectLiteral) // true
 isArrayWhereEvery([{ foo: 1 }, new Date()], isObjectLiteral) // false
 isArrayWhereEvery([], isObjectLiteral) // false
+
+import { isObjectLiteralWhereEvery, isArray } from 'object-array-utils';
+
+isObjectLiteralWhereEvery({ foo: [1], bar: [2, 3] }, isArray) // true
+isObjectLiteralWhereEvery({}, isArray) // false
 ```
 
 ## Limitations

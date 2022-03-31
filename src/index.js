@@ -69,6 +69,14 @@ function isArrayWhereEvery(a, fun) {
   return !a.some(o => !fun(o));
 }
 
+function isObjectLiteralWhereEvery(o, fun) {
+  if (!isObjectLiteral(o) || isEmptyObjectLiteral(o)) {
+    return false;
+  }
+
+  return isArrayWhereEvery(Object.values(o), fun);
+}
+
 function areObjectsEqual(a, b, options = {}) {
   if (!isObject(a) || !isObject(b)) {
     throw new Error('expected objects');
@@ -371,6 +379,7 @@ export {
   isObject,
   isObjectInstance,
   isObjectLiteral,
+  isObjectLiteralWhereEvery,
   isObjectSubset,
   isPrimitive,
   takeProperties
