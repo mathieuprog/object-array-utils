@@ -185,10 +185,10 @@ test('removeArrayElementByIndex', () => {
 });
 
 test('removeArrayElement', () => {
-  expect(removeArrayElement([1, 2, 3], 1)).toEqual([2, 3]);
+  expect(removeArrayElement([1, 2, 3, 1], 1)).toEqual([2, 3, 1]);
   expect(removeArrayElement([], 1)).toEqual([]);
   expect(removeArrayElement([1, 2, 3], 5)).toEqual([1, 2, 3]);
-  expect(removeArrayElement([1, 2, 3], (e) => e === 1)).toEqual([2, 3]);
+  expect(removeArrayElement([1, 2, 3, 1], (e) => e === 1)).toEqual([2, 3, 1]);
   expect(removeArrayElement([], (e) => e === 1)).toEqual([]);
   expect(removeArrayElement([1, 2, 3], (e) => e === 5)).toEqual([1, 2, 3]);
 });
