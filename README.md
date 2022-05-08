@@ -71,6 +71,15 @@ import { takeProperties } from 'object-array-utils';
 takeProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { filtered: { prop1: 1 }, rejected: { prop2: 2 } }
 takeProperties({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { filtered: { prop1: 1 }, rejected: { prop2: 2 } }
 
+import { removeArrayElement } from 'object-array-utils';
+
+removeArrayElement([1, 1, 2, 3], 1) // [1, 2, 3]
+removeArrayElement([1, 1, 2, 3], (e) => e === 1) // [1, 2, 3]
+
+import { removeArrayElementByIndex } from 'object-array-utils';
+
+removeArrayElementByIndex([1, 2, 3], 1) // [1, 3]
+
 import { isObjectSubset } from 'object-array-utils';
 
 isObjectSubset({ prop1: 1, prop2: 2 }, { prop1: 1 }) // true
