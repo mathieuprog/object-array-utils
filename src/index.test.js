@@ -12,6 +12,8 @@ import {
   isObjectLiteral,
   isObjectLiteralWhereEvery,
   isPrimitive,
+  removeArrayElement,
+  removeArrayElementByIndex,
   takeProperties
 } from './index';
 
@@ -79,6 +81,7 @@ test('hasObjectProperties', () => {
   expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar'])).toBeTruthy();
   expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toBeTruthy();
   expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toBeFalsy();
+  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['foo', 'foo'])).toBeTruthy();
 });
 
 test('filterProperties using whitelist of props', () => {
@@ -86,6 +89,8 @@ test('filterProperties using whitelist of props', () => {
   expect(filterProperties({ foo: 1, bar: 2 }, ['bar'])).toEqual({ bar: 2 });
   expect(filterProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ foo: 1, bar: 2 });
   expect(filterProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ foo: 1, bar: 2 });
+  expect(filterProperties({ foo: 1, bar: 2 }, ['foo', 'foo'])).toEqual({ foo: 1 });
+  expect(filterProperties({ foo: 1, foo: 2, bar: 3 }, ['foo'])).toEqual({ foo: 1, foo: 2 });
 });
 
 test('filterProperties using function', () => {
@@ -94,16 +99,17 @@ test('filterProperties using function', () => {
 });
 
 test('takeProperties using whitelist of props', () => {
-  expect(takeProperties({ foo: 1, bar: 2 }, ['foo'])).toEqual({ filtered: { foo: 1 }, rejected: { bar: 2 } });
-  expect(takeProperties({ foo: 1, bar: 2 }, ['bar'])).toEqual({ filtered: { bar: 2 }, rejected: { foo: 1 } });
-  expect(takeProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ filtered: { foo: 1, bar: 2 }, rejected: {} });
-  expect(takeProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ filtered: { foo: 1, bar: 2 }, rejected: {} });
-  expect(takeProperties({ foo: 1, bar: 2 }, ['baz'])).toEqual({ filtered: {}, rejected: { foo: 1, bar: 2 } });
+  expect(takeProperties({ foo: 1, bar: 2 }, ['foo'])).toEqual({ filtered: { foo: 1 }, rejected: { bar: 2 }, undefined: {} });
+  expect(takeProperties({ foo: 1, bar: 2 }, ['bar'])).toEqual({ filtered: { bar: 2 }, rejected: { foo: 1 }, undefined: {} });
+  expect(takeProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ filtered: { foo: 1, bar: 2 }, rejected: {}, undefined: {} });
+  expect(takeProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ filtered: { foo: 1, bar: 2 }, rejected: {}, undefined: { baz: undefined } });
+  expect(takeProperties({ foo: 1, bar: 2 }, ['baz'])).toEqual({ filtered: {}, rejected: { foo: 1, bar: 2 }, undefined: { baz: undefined } });
+  expect(takeProperties({ foo: 1, foo: 2, bar: 3 }, ['foo'])).toEqual({ filtered: { foo: 1, foo: 2 }, rejected: { bar: 3 }, undefined: {} });
 });
 
 test('takeProperties using function', () => {
-  expect(takeProperties({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ filtered: { foo: 1 }, rejected: { bar: 2 } });
-  expect(takeProperties({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({filtered: {}, rejected: { foo: 3, bar: 2 } });
+  expect(takeProperties({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ filtered: { foo: 1 }, rejected: { bar: 2 }, undefined: {} });
+  expect(takeProperties({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({filtered: {}, rejected: { foo: 3, bar: 2 }, undefined: {} });
 });
 
 test('isEmptyArray', () => {
@@ -170,4 +176,19 @@ test('isEmptyObjectLiteral', () => {
   expect(isEmptyObjectLiteral([])).toBeFalsy();
   expect(isEmptyObjectLiteral({ foo: 1 })).toBeFalsy();
   expect(isEmptyObjectLiteral(new Date())).toBeFalsy();
+});
+
+test('removeArrayElementByIndex', () => {
+  expect(removeArrayElementByIndex([1, 2, 3], 1)).toEqual([1, 3]);
+  expect(removeArrayElementByIndex([], 1)).toEqual([]);
+  expect(removeArrayElementByIndex([1, 2, 3], 5)).toEqual([1, 2, 3]);
+});
+
+test('removeArrayElement', () => {
+  expect(removeArrayElement([1, 2, 3], 1)).toEqual([2, 3]);
+  expect(removeArrayElement([], 1)).toEqual([]);
+  expect(removeArrayElement([1, 2, 3], 5)).toEqual([1, 2, 3]);
+  expect(removeArrayElement([1, 2, 3], (e) => e === 1)).toEqual([2, 3]);
+  expect(removeArrayElement([], (e) => e === 1)).toEqual([]);
+  expect(removeArrayElement([1, 2, 3], (e) => e === 5)).toEqual([1, 2, 3]);
 });

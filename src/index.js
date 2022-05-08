@@ -228,11 +228,17 @@ function takeProperties(o, arg) {
 }
 
 function takePropsByWhitelist(o, props) {
-  return Object.keys(o).reduce(({ filtered, rejected }, prop) => {
+  const keys = Object.keys(o);
+
+  const undefined_ =
+    differenceArraysOfPrimitives(props, keys)
+      .reduce((acc, key) => ({ ...acc, [key]: undefined }), {});
+
+  return keys.reduce(({ filtered, rejected, undefined }, prop) => {
     return (props.includes(prop))
-      ? { filtered: { ...filtered, [prop]: o[prop] }, rejected }
-      : { filtered, rejected: { ...rejected, [prop]: o[prop] } }
-  }, { filtered: {}, rejected: {} });
+      ? { filtered: { ...filtered, [prop]: o[prop] }, rejected, undefined }
+      : { filtered, rejected: { ...rejected, [prop]: o[prop] }, undefined }
+  }, { filtered: {}, rejected: {}, undefined: undefined_ });
 }
 
 function takePropsByFun(o, fun) {
@@ -242,6 +248,57 @@ function takePropsByFun(o, fun) {
       .map(([key, _]) => key);
 
   return takePropsByWhitelist(o, filteredKeys);
+}
+
+function removeArrayElement(array, valueOrFun) {
+  if (!isArray(array)) {
+    throw new Error('expected array');
+  }
+
+  return (typeof valueOrFun === 'function')
+    ? removeArrayElementByFun(array, valueOrFun)
+    : removeArrayElementByValue(array, valueOrFun);
+}
+
+function removeArrayElementByValue(array, value) {
+  const indexToRemove = array.indexOf(value);
+
+  return (indexToRemove !== -1)
+    ? removeArrayElementByIndex(array, indexToRemove)
+    : array;
+}
+
+function removeArrayElementByFun(array, fun) {
+  let indexToRemove = null;
+
+  for (let i = 0; i < array.length; ++i) {
+    if (fun(array[i])) {
+      indexToRemove = i;
+      break;
+    }
+  }
+
+  if (indexToRemove === null) {
+    return array;
+  }
+
+  return removeArrayElementByIndex(array, indexToRemove);
+}
+
+function removeArrayElementByIndex(array, index) {
+  if (!isArray(array)) {
+    throw new Error('expected array');
+  }
+
+  if (isNaN(index) || index < 0) {
+    throw new Error('expected positive number')
+  }
+
+  return [...array.slice(0, index), ...array.slice(index + 1)];
+}
+
+function differenceArraysOfPrimitives(a1, a2) {
+  return a1.filter((e) => !a2.includes(e));
 }
 
 // https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array/groupBy
@@ -382,5 +439,7 @@ export {
   isObjectLiteralWhereEvery,
   isObjectSubset,
   isPrimitive,
+  removeArrayElement,
+  removeArrayElementByIndex,
   takeProperties
 }
