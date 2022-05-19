@@ -80,6 +80,11 @@ import { removeArrayElementByIndex } from 'object-array-utils';
 
 removeArrayElementByIndex([1, 2, 3], 1) // [1, 3]
 
+import { removeArrayElements } from 'object-array-utils';
+
+removeArrayElements([1, 1, 2, 3], [1, 2]) // [1, 3]
+removeArrayElements([1, 1, 2, 3], [1, 2, 1]) // [3]
+
 import { isObjectSubset } from 'object-array-utils';
 
 isObjectSubset({ prop1: 1, prop2: 2 }, { prop1: 1 }) // true

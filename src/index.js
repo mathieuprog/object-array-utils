@@ -250,6 +250,18 @@ function takePropsByFun(o, fun) {
   return takePropsByWhitelist(o, filteredKeys);
 }
 
+function removeArrayElements(array, listOfValues) {
+  if (!isArray(array) || !isArray(listOfValues)) {
+    throw new Error('expected array');
+  }
+
+  listOfValues.forEach((value) => {
+    array = removeArrayElement(array, value);
+  });
+
+  return array;
+}
+
 function removeArrayElement(array, valueOrFun) {
   if (!isArray(array)) {
     throw new Error('expected array');
@@ -441,5 +453,6 @@ export {
   isPrimitive,
   removeArrayElement,
   removeArrayElementByIndex,
+  removeArrayElements,
   takeProperties
 }

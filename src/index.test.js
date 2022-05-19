@@ -14,6 +14,7 @@ import {
   isPrimitive,
   removeArrayElement,
   removeArrayElementByIndex,
+  removeArrayElements,
   takeProperties
 } from './index';
 
@@ -191,4 +192,14 @@ test('removeArrayElement', () => {
   expect(removeArrayElement([1, 2, 3, 1], (e) => e === 1)).toEqual([2, 3, 1]);
   expect(removeArrayElement([], (e) => e === 1)).toEqual([]);
   expect(removeArrayElement([1, 2, 3], (e) => e === 5)).toEqual([1, 2, 3]);
+});
+
+test('removeArrayElements', () => {
+  expect(removeArrayElements([1, 2, 3, 1], [1, 2])).toEqual([3, 1]);
+  expect(removeArrayElements([1, 2, 3, 1], [2, 1, 1])).toEqual([3]);
+  expect(removeArrayElements([1, 2, 3, 1], [2, 2, 1, 1, 1])).toEqual([3]);
+  expect(removeArrayElements([1], [])).toEqual([1]);
+  expect(removeArrayElements([], [1])).toEqual([]);
+  expect(removeArrayElements([], [])).toEqual([]);
+  expect(removeArrayElements([1, 2, 3], [5, 6])).toEqual([1, 2, 3]);
 });
