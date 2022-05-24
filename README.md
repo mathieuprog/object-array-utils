@@ -104,6 +104,10 @@ import { areArraysEqual } from 'object-array-utils';
 
 areArraysEqual([1, { prop1: 1, prop2: 2 }], [{ prop2: 2, prop1: 1 }, 1]) // true
 
+import { areValuesEqual } from 'object-array-utils';
+
+areValuesEqual(new Date(), new Date()) // true
+
 import { deepFreeze } from 'object-array-utils';
 
 deepFreeze({ foo: 1 })

@@ -77,6 +77,30 @@ function isObjectLiteralWhereEvery(o, fun) {
   return isArrayWhereEvery(Object.values(o), fun);
 }
 
+function areValuesEqual(a, b) {
+  if (a === b) return true;
+
+  if (!a || !b) return false;
+
+  if (typeof a !== typeof b) return false;
+
+  if (isArray(a) !== isArray(b)) return false;
+
+  if (isArray(a)) {
+    if (!areArraysEqual(a, b)) return false;
+    return true;
+  }
+
+  if (isObject(a) !== isObject(b)) return false;
+
+  if (isObject(a)) {
+    if (!areObjectsEqual(a, b)) return false;
+    return true;
+  }
+
+  return false;
+}
+
 function areObjectsEqual(a, b, options = {}) {
   if (!isObject(a) || !isObject(b)) {
     throw new Error('expected objects');
@@ -114,13 +138,13 @@ function areObjectsEqual(a, b, options = {}) {
   if (Object.keys(a).length !== Object.keys(b).length) return false;
 
   for (let [key, value] of Object.entries(a)) {
+    if (!hasObjectProperty(b, key)) return false;
+
     if (value === b[key]) continue;
 
     const { eq, ne } = hookOnCompareObjectProperties(key, a, b) ?? {};
     if (eq) return true;
     if (ne) return false;
-
-    if (!hasObjectProperty(b, key)) return false;
 
     if (!value || !b[key]) return false;
 
@@ -431,6 +455,7 @@ function deepFreeze(o) {
 export {
   areArraysEqual,
   areObjectsEqual,
+  areValuesEqual,
   deepFreeze,
   filterProperties,
   hasObjectProperty,

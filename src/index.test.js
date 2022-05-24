@@ -1,6 +1,7 @@
 import {
   areArraysEqual,
   areObjectsEqual,
+  areValuesEqual,
   deepFreeze,
   filterProperties,
   hasObjectProperties,
@@ -17,6 +18,17 @@ import {
   removeArrayElements,
   takeProperties
 } from './index';
+
+test('areValuesEqual', () => {
+  expect(areValuesEqual(null, null)).toBeTruthy();
+  expect(areValuesEqual(null, undefined)).toBeFalsy();
+  expect(areValuesEqual(undefined, undefined)).toBeTruthy();
+  expect(areValuesEqual(false, false)).toBeTruthy();
+  expect(areValuesEqual(1, 1)).toBeTruthy();
+  expect(areValuesEqual(1, '1')).toBeFalsy();
+  expect(areValuesEqual(new Date(), new Date())).toBeTruthy();
+  expect(areValuesEqual([{}], [{}])).toBeTruthy();
+});
 
 test('areObjectsEqual', () => {
   expect(
