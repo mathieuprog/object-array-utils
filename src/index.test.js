@@ -16,6 +16,7 @@ import {
   removeArrayElement,
   removeArrayElementByIndex,
   removeArrayElements,
+  sortProperties,
   takeProperties
 } from './index';
 
@@ -214,4 +215,10 @@ test('removeArrayElements', () => {
   expect(removeArrayElements([], [1])).toEqual([]);
   expect(removeArrayElements([], [])).toEqual([]);
   expect(removeArrayElements([1, 2, 3], [5, 6])).toEqual([1, 2, 3]);
+});
+
+test('sortProperties', () => {
+  expect(Object.keys({ b: 2, a: 1, c: 3 })).toEqual(['b', 'a', 'c']);
+  expect(Object.keys({ b: 2, a: 1, c: 3 })).not.toEqual(['a', 'b', 'c']);
+  expect(Object.keys(sortProperties({ b: 2, a: 1, c: 3 }))).toEqual(['a', 'b', 'c']);
 });

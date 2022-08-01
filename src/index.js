@@ -452,6 +452,10 @@ function deepFreeze(o) {
   return Object.freeze(o);
 }
 
+function sortProperties(o) {
+  return Object.fromEntries(Object.entries(o).sort(([k1], [k2]) => k1 < k2 ? -1 : 1));
+}
+
 export {
   areArraysEqual,
   areObjectsEqual,
@@ -479,5 +483,6 @@ export {
   removeArrayElement,
   removeArrayElementByIndex,
   removeArrayElements,
+  sortProperties,
   takeProperties
 }
