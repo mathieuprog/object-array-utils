@@ -337,7 +337,7 @@ function differenceArraysOfPrimitives(a1, a2) {
   return a1.filter((e) => !a2.includes(e));
 }
 
-// https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array/groupBy
+// https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array/group
 // function groupArrayElementsBy(arrayOfObjects, getKey) {
 //   return arrayOfObjects.reduce(function (resultingObject, object) {
 //     const key = getKey(object);
