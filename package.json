@@ -1,6 +1,6 @@
 {
   "name": "object-array-utils",
-  "version": "2.10.0",
+  "version": "2.11.0",
   "description": "Utilities for working with arrays and objects",
   "scripts": {
     "test": "jest"
