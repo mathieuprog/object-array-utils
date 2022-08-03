@@ -245,6 +245,25 @@ function filterPropsByFun(o, fun) {
   return Object.fromEntries(filteredEntries);
 }
 
+function rejectProperties(o, arg) {
+  return isArray(arg)
+    ? rejectPropsByWhitelist(o, arg)
+    : rejectPropsByFun(o, arg);
+}
+
+function rejectPropsByWhitelist(o, props) {
+  return Object.keys(o).reduce((newObject, prop) => {
+    return (props.includes(prop))
+      ? newObject
+      : { ...newObject, [prop]: o[prop] };
+  }, {});
+}
+
+function rejectPropsByFun(o, fun) {
+  const filteredEntries = Object.entries(o).filter(([key, val]) => !fun(key, val));
+  return Object.fromEntries(filteredEntries);
+}
+
 function takeProperties(o, arg) {
   return isArray(arg)
     ? takePropsByWhitelist(o, arg)
@@ -480,6 +499,7 @@ export {
   isObjectLiteralWhereEvery,
   isObjectSubset,
   isPrimitive,
+  rejectProperties,
   removeArrayElement,
   removeArrayElementByIndex,
   removeArrayElements,

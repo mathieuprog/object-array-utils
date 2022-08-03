@@ -13,6 +13,7 @@ import {
   isObjectLiteral,
   isObjectLiteralWhereEvery,
   isPrimitive,
+  rejectProperties,
   removeArrayElement,
   removeArrayElementByIndex,
   removeArrayElements,
@@ -110,6 +111,23 @@ test('filterProperties using whitelist of props', () => {
 test('filterProperties using function', () => {
   expect(filterProperties({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ foo: 1 });
   expect(filterProperties({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({});
+});
+
+test('rejectProperties using whitelist of props', () => {
+  expect(rejectProperties({ foo: 1, bar: 2 }, ['foo'])).toEqual({ bar: 2 });
+  expect(rejectProperties({ foo: 1, bar: 2 }, ['bar'])).toEqual({ foo: 1 });
+  expect(rejectProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({});
+  expect(rejectProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({});
+  expect(rejectProperties({ foo: 1, bar: 2 }, ['foo', 'foo'])).toEqual({ bar: 2 });
+  expect(rejectProperties({ foo: 1, foo: 2, bar: 3 }, ['foo'])).toEqual({ bar: 3 });
+  expect(rejectProperties({ foo: 1, foo: 2, bar: 3 }, ['bar'])).toEqual({ foo: 1, foo: 2 });
+  expect(rejectProperties({ foo: 1, bar: 2 }, ['baz'])).toEqual({ foo: 1, bar: 2 });
+});
+
+test('rejectProperties using function', () => {
+  expect(rejectProperties({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ bar: 2 });
+  expect(rejectProperties({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({ foo: 3, bar: 2 });
+  expect(rejectProperties({ foo: 3, bar: 2 }, (_key, val) => val > 1)).toEqual({});
 });
 
 test('takeProperties using whitelist of props', () => {
