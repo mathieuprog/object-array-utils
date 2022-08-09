@@ -4,7 +4,7 @@ import {
   areValuesEqual,
   deepFreeze,
   filterProperties,
-  hasObjectProperties,
+  hasProperties,
   isArrayOfPrimitives,
   isArrayOfType,
   isArrayWhereEvery,
@@ -91,12 +91,12 @@ test('areArraysEqual', () => {
   deepFreeze([1, { b: null, c: { d: [2, 5, 1, 0, {c: 3, d: 4}], e: "world" }, a: "foo" }]);
 });
 
-test('hasObjectProperties', () => {
-  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['foo'])).toBeTruthy();
-  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar'])).toBeTruthy();
-  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toBeTruthy();
-  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toBeFalsy();
-  expect(hasObjectProperties({ foo: 1, bar: 2 }, ['foo', 'foo'])).toBeTruthy();
+test('hasProperties', () => {
+  expect(hasProperties({ foo: 1, bar: 2 }, ['foo'])).toBeTruthy();
+  expect(hasProperties({ foo: 1, bar: 2 }, ['bar'])).toBeTruthy();
+  expect(hasProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toBeTruthy();
+  expect(hasProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toBeFalsy();
+  expect(hasProperties({ foo: 1, bar: 2 }, ['foo', 'foo'])).toBeTruthy();
 });
 
 test('filterProperties using whitelist of props', () => {

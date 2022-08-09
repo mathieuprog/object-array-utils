@@ -53,13 +53,13 @@ import { isNullOrUndefined } from 'object-array-utils';
 isNullOrUndefined(null) // true
 isNullOrUndefined(undefined) // true
 
-import { hasObjectProperty } from 'object-array-utils';
+import { hasProperty } from 'object-array-utils';
 
-hasObjectProperty({ prop: 1 }, 'prop') // true
+hasProperty({ prop: 1 }, 'prop') // true
 
-import { hasObjectProperties } from 'object-array-utils';
+import { hasProperties } from 'object-array-utils';
 
-hasObjectProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop2']) // true
+hasProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop2']) // true
 
 import { filterProperties } from 'object-array-utils';
 

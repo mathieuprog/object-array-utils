@@ -138,7 +138,7 @@ function areObjectsEqual(a, b, options = {}) {
   if (Object.keys(a).length !== Object.keys(b).length) return false;
 
   for (let [key, value] of Object.entries(a)) {
-    if (!hasObjectProperty(b, key)) return false;
+    if (!hasProperty(b, key)) return false;
 
     if (value === b[key]) continue;
 
@@ -214,7 +214,7 @@ function areArraysEqual(a, b, options = {}) {
   return true;
 }
 
-function hasObjectProperty(o, prop) {
+function hasProperty(o, prop) {
   if (!isObject(o)) {
     throw new Error('expected object');
   }
@@ -222,8 +222,8 @@ function hasObjectProperty(o, prop) {
   return Object.prototype.hasOwnProperty.call(o, prop);
 }
 
-function hasObjectProperties(o, props) {
-  return props.every(prop => hasObjectProperty(o, prop));
+function hasProperties(o, props) {
+  return props.every(prop => hasProperty(o, prop));
 }
 
 function filterProperties(o, arg) {
@@ -394,7 +394,7 @@ function isObjectSubset(superObject, subObject, options = {}) {
   if (Object.keys(superObject).length < Object.keys(subObject).length) return false;
 
   return Object.keys(subObject).every(key => {
-    if (!hasObjectProperty(superObject, key)) return false;
+    if (!hasProperty(superObject, key)) return false;
 
     if (superObject[key] === subObject[key]) return true;
 
@@ -481,8 +481,8 @@ export {
   areValuesEqual,
   deepFreeze,
   filterProperties,
-  hasObjectProperty,
-  hasObjectProperties,
+  hasProperty,
+  hasProperties,
   isArray,
   isArrayOfObjects,
   isArrayOfObjectLiterals,
