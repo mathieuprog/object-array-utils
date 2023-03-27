@@ -58,4 +58,13 @@ declare module "object-array-utils" {
   function deepFreeze(o: Record<string, unknown>): Record<string, unknown>;
 
   function sortProperties(o: Record<string, unknown>): Record<string, unknown>;
+
+  type RangeOptions = {
+    start?: number;
+    count?: number;
+    endInclusive?: number;
+    endExclusive?: number;
+  };
+
+  function range(o: RangeOptions): number[];
 } 
