@@ -475,6 +475,35 @@ function sortProperties(o) {
   return Object.fromEntries(Object.entries(o).sort(([k1], [k2]) => k1 < k2 ? -1 : 1));
 }
 
+function range(options) {
+  const unknownOptions = rejectProperties(options, ['start', 'count', 'endInclusive', 'endExclusive']);
+
+  if (!isEmptyObjectLiteral(unknownOptions)) {
+    throw new Error(`unknown options: ${Object.keys(unknownOptions).join(', ')}`);
+  }
+
+  if (!options.endInclusive && !options.endExclusive && !options.count) {
+    throw new Error('expected either `endInclusive`, `endExclusive` or `count` to be specified');
+  }
+
+  if (options.endInclusive && options.start > options.endInclusive) {
+    throw new Error('`endInclusive` should be greater or equal than `start`');
+  }
+
+  if (options.endExclusive && options.start >= options.endExclusive) {
+    throw new Error('`endExclusive` should be greater than `start`');
+  }
+
+  const start = options.start ?? 0;
+  const count = options.count ?? ((options.endInclusive) ? options.endInclusive - start + 1 : options.endExclusive - start);
+
+  return [...Array(count).keys()].map(i => i + start);
+}
+
+function duplicate(value) {
+  
+}
+
 export {
   areArraysEqual,
   areObjectsEqual,
@@ -499,6 +528,7 @@ export {
   isObjectLiteralWhereEvery,
   isObjectSubset,
   isPrimitive,
+  range,
   rejectProperties,
   removeArrayElement,
   removeArrayElementByIndex,
