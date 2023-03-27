@@ -500,8 +500,8 @@ function range(options) {
   return [...Array(count).keys()].map(i => i + start);
 }
 
-function duplicate(value) {
-  
+function duplicate(value, count) {
+  return Array.from({ length: count }, () => value);
 }
 
 export {
@@ -509,6 +509,7 @@ export {
   areObjectsEqual,
   areValuesEqual,
   deepFreeze,
+  duplicate,
   filterProperties,
   hasProperty,
   hasProperties,
