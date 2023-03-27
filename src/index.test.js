@@ -3,6 +3,7 @@ import {
   areObjectsEqual,
   areValuesEqual,
   deepFreeze,
+  duplicate,
   filterProperties,
   hasProperties,
   isArrayOfPrimitives,
@@ -250,4 +251,9 @@ test('range', () => {
   expect(range({ start: 5, endInclusive: 7 })).toEqual([5, 6, 7]);
   expect(range({ start: 5, endInclusive: 5 })).toEqual([5]);
   expect(range({ start: 5, endExclusive: 7 })).toEqual([5, 6]);
+});
+
+test('duplicate', () => {
+  expect(duplicate(2, 3)).toEqual([2, 2, 2]);
+  expect(duplicate(['foo', 0], 3)).toEqual([['foo', 0], ['foo', 0], ['foo', 0]]);
 });
