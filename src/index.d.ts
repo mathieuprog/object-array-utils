@@ -67,4 +67,6 @@ declare module "object-array-utils" {
   };
 
   function range(o: RangeOptions): number[];
+
+  function duplicate(value: unknown, count: number): unknown[];
 } 
