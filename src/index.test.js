@@ -13,6 +13,7 @@ import {
   isObjectLiteral,
   isObjectLiteralWhereEvery,
   isPrimitive,
+  range,
   rejectProperties,
   removeArrayElement,
   removeArrayElementByIndex,
@@ -239,4 +240,14 @@ test('sortProperties', () => {
   expect(Object.keys({ b: 2, a: 1, c: 3 })).toEqual(['b', 'a', 'c']);
   expect(Object.keys({ b: 2, a: 1, c: 3 })).not.toEqual(['a', 'b', 'c']);
   expect(Object.keys(sortProperties({ b: 2, a: 1, c: 3 }))).toEqual(['a', 'b', 'c']);
+});
+
+test('range', () => {
+  expect(range({ count: 2 })).toEqual([0, 1]);
+  expect(range({ endInclusive: 2 })).toEqual([0, 1, 2]);
+  expect(range({ endExclusive: 2 })).toEqual([0, 1]);
+  expect(range({ start: 5, count: 2 })).toEqual([5, 6]);
+  expect(range({ start: 5, endInclusive: 7 })).toEqual([5, 6, 7]);
+  expect(range({ start: 5, endInclusive: 5 })).toEqual([5]);
+  expect(range({ start: 5, endExclusive: 7 })).toEqual([5, 6]);
 });
