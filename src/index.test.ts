@@ -5,6 +5,7 @@ import {
   areObjectsEqual,
   areValuesEqual,
   deepFreeze,
+  differenceArraysOfPrimitives,
   duplicate,
   filterProperties,
   hasProperties,
@@ -254,4 +255,12 @@ test('duplicate', () => {
   expect(duplicate(2, 3)).toEqual([2, 2, 2]);
   expect(duplicate(['foo', 0], 3)).toEqual([['foo', 0], ['foo', 0], ['foo', 0]]);
   expect(duplicate({ num: 1 }, 2, (value, i) => ({ ...value, id: i + 1 }))).toEqual([{ num: 1, id: 1 }, { num: 1, id: 2 }]);
+});
+
+test('differenceArraysOfPrimitives', () => {
+  expect(differenceArraysOfPrimitives([2], [2])).toEqual([]);
+  expect(differenceArraysOfPrimitives([2], [3])).toEqual([2]);
+  expect(differenceArraysOfPrimitives([1, 2, 3, 9], [1, 3, 4])).toEqual([2, 9]);
+  expect(differenceArraysOfPrimitives(['foo'], ['bar', 'foo'])).toEqual([]);
+  expect(differenceArraysOfPrimitives(['bar', 'foo'], ['foo'])).toEqual(['bar']);
 });
