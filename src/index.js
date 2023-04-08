@@ -500,8 +500,8 @@ function range(options) {
   return [...Array(count).keys()].map(i => i + start);
 }
 
-function duplicate(value, count) {
-  return Array.from({ length: count }, () => value);
+function duplicate(value, count, transformFun = (v) => v) {
+  return [...Array(count).keys()].map(i => transformFun(value, i));
 }
 
 export {
