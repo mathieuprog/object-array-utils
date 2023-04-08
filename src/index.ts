@@ -374,7 +374,7 @@ function removeArrayElementByIndex<T = unknown>(array: T[], index: number): T[] 
   return [...array.slice(0, index), ...array.slice(index + 1)];
 }
 
-function differenceArraysOfPrimitives<T = unknown>(a1: T[], a2: T[]): T[] {
+function differenceArraysOfPrimitives<T extends Primitive>(a1: T[], a2: T[]): T[] {
   return a1.filter((e) => !a2.includes(e));
 }
 
@@ -555,6 +555,7 @@ export {
   areObjectsEqual,
   areValuesEqual,
   deepFreeze,
+  differenceArraysOfPrimitives,
   duplicate,
   filterProperties,
   hasProperty,
