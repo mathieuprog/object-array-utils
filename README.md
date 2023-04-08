@@ -159,6 +159,10 @@ import { isObjectLiteralWhereEvery, isArray } from 'object-array-utils';
 isObjectLiteralWhereEvery({ foo: [1], bar: [2, 3] }, isArray) // true
 isObjectLiteralWhereEvery({}, isArray) // false
 
+import { differenceArraysOfPrimitives } from 'object-array-utils';
+
+differenceArraysOfPrimitives([1, 2, 3, 9], [1, 3, 4]) // [2, 9]
+
 import { duplicate } from 'duplicate';
 
 duplicate(1, 3) // [1, 1, 1]
