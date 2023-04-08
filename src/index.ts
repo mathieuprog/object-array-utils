@@ -1,35 +1,44 @@
-function isNullOrUndefined(v) {
+export type ObjectLiteral<T = unknown> = Record<string, T>;
+
+export type ObjectInstance<T = unknown> = {
+  constructor: Function;
+  [key: string]: unknown;
+};
+
+export type Primitive = string | number | bigint | boolean | symbol | null | undefined;
+
+function isNullOrUndefined(v: unknown) {
   return v === null || v === undefined;
 }
 
-function isObject(o) {
+function isObject(o: unknown): o is ObjectInstance | ObjectLiteral {
   return isObjectLiteral(o) || isObjectInstance(o);
 }
 
-function isObjectLiteral(o) {
+function isObjectLiteral(o: unknown): o is ObjectLiteral {
   return !isNullOrUndefined(o) && Object.getPrototypeOf(o) === Object.prototype;
 }
 
-function isEmptyObjectLiteral(o) {
+function isEmptyObjectLiteral(o: unknown): o is {} {
   return isObjectLiteral(o) && Object.keys(o).length === 0;
 }
 
-function isObjectInstance(o) {
+function isObjectInstance(o: unknown): o is ObjectInstance {
   return !isNullOrUndefined(o)
     && !isArray(o)
     && Object.getPrototypeOf(o) !== Object.prototype
     && typeof o === 'object';
 }
 
-function isArray(a) {
+function isArray(a: unknown): a is unknown[] {
   return !isNullOrUndefined(a) && Array.isArray(a);
 }
 
-function isEmptyArray(a) {
+function isEmptyArray(a: unknown): a is [] {
   return isArray(a) && a.length === 0;
 }
 
-function isArrayOfObjects(a) {
+function isArrayOfObjects(a: unknown): a is (ObjectInstance | ObjectLiteral)[] {
   if (!isArray(a) || a.length === 0) {
     return false;
   }
@@ -37,7 +46,7 @@ function isArrayOfObjects(a) {
   return !a.some(o => !isObject(o));
 }
 
-function isArrayOfObjectLiterals(a) {
+function isArrayOfObjectLiterals(a: unknown): a is ObjectLiteral[] {
   if (!isArray(a) || a.length === 0) {
     return false;
   }
@@ -45,7 +54,7 @@ function isArrayOfObjectLiterals(a) {
   return !a.some(o => !isObjectLiteral(o));
 }
 
-function isArrayOfPrimitives(a) {
+function isArrayOfPrimitives(a: unknown): a is Primitive[] {
   if (!isArray(a) || a.length === 0) {
     return false;
   }
@@ -53,7 +62,10 @@ function isArrayOfPrimitives(a) {
   return !a.some(o => !isPrimitive(o));
 }
 
-function isArrayOfType(a, type) {
+function isArrayOfType<T extends string | number | boolean>(
+  a: unknown,
+  type: T extends string ? 'string' : T extends number ? 'number' : 'boolean'
+): a is Array<T> {
   if (!isArray(a) || a.length === 0) {
     return false;
   }
@@ -61,7 +73,7 @@ function isArrayOfType(a, type) {
   return !a.some(o => typeof o !== type);
 }
 
-function isArrayWhereEvery(a, fun) {
+function isArrayWhereEvery<T>(a: unknown, fun: (value: unknown) => boolean): a is Array<T> {
   if (!isArray(a) || a.length === 0) {
     return false;
   }
@@ -69,7 +81,7 @@ function isArrayWhereEvery(a, fun) {
   return !a.some(o => !fun(o));
 }
 
-function isObjectLiteralWhereEvery(o, fun) {
+function isObjectLiteralWhereEvery<T>(o: unknown, fun: (value: unknown) => boolean): o is ObjectLiteral<T> {
   if (!isObjectLiteral(o) || isEmptyObjectLiteral(o)) {
     return false;
   }
@@ -77,7 +89,7 @@ function isObjectLiteralWhereEvery(o, fun) {
   return isArrayWhereEvery(Object.values(o), fun);
 }
 
-function areValuesEqual(a, b) {
+function areValuesEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
 
   if (!a || !b) return false;
@@ -87,29 +99,34 @@ function areValuesEqual(a, b) {
   if (isArray(a) !== isArray(b)) return false;
 
   if (isArray(a)) {
-    if (!areArraysEqual(a, b)) return false;
+    if (!areArraysEqual(a, b as unknown[])) return false;
     return true;
   }
 
   if (isObject(a) !== isObject(b)) return false;
 
   if (isObject(a)) {
-    if (!areObjectsEqual(a, b)) return false;
+    if (!areObjectsEqual(a, b as ObjectInstance | ObjectLiteral)) return false;
     return true;
   }
 
   return false;
 }
 
-function areObjectsEqual(a, b, options = {}) {
+export enum ComparisonResult {
+  Equal = 'EQUAL',
+  NotEqual = 'NOT_EQUAL',
+  DefaultComparison = 'DEFAULT_COMPARISON'
+}
+
+type AreEqualOptions = {
+  compare: (a: any, b: any) => ComparisonResult;
+};
+
+function areObjectsEqual(a: ObjectLiteral | ObjectInstance, b: ObjectLiteral | ObjectInstance, options?: AreEqualOptions) {
   if (!isObject(a) || !isObject(b)) {
     throw new Error('expected objects');
   }
-
-  const { hooks, ignoreProperties } = options;
-
-  const hookOnCompareObjects = hooks?.onCompareObjects ?? (() => ({}));
-  const hookOnCompareObjectProperties = hooks?.onCompareObjectProperties ?? (() => ({}));
 
   if (a === b) return true;
 
@@ -117,9 +134,17 @@ function areObjectsEqual(a, b, options = {}) {
   a = { ...a };
   b = { ...b };
 
-  const { eq, ne } = hookOnCompareObjects(a, b) ?? {};
-  if (eq) return true;
-  if (ne) return false;
+  switch (options?.compare(a, b)) {
+    case 'DEFAULT_COMPARISON':
+    case undefined:
+      break;
+
+    case 'EQUAL':
+      return true;
+
+    case 'NOT_EQUAL':
+      return false;
+  }
 
   if (isObjectLiteral(a) !== isObjectLiteral(b)) return false;
 
@@ -128,39 +153,30 @@ function areObjectsEqual(a, b, options = {}) {
     return str !== '[object Object]' && str === b.toString();
   }
 
-  if (ignoreProperties) {
-    ignoreProperties.forEach(prop => {
-      delete a[prop];
-      delete b[prop];
-    });
-  }
-
   if (Object.keys(a).length !== Object.keys(b).length) return false;
 
   for (let [key, value] of Object.entries(a)) {
     if (!hasProperty(b, key)) return false;
 
-    if (value === b[key]) continue;
+    const b_: ObjectLiteral = b;
 
-    const { eq, ne } = hookOnCompareObjectProperties(key, a, b) ?? {};
-    if (eq) return true;
-    if (ne) return false;
+    if (value === b_[key]) continue;
 
-    if (!value || !b[key]) return false;
+    if (!value || !b_[key]) return false;
 
-    if (typeof value !== typeof b[key]) return false;
+    if (typeof value !== typeof b_[key]) return false;
 
-    if (isArray(value) !== isArray(b[key])) return false;
+    if (isArray(value) !== isArray(b_[key])) return false;
 
     if (isArray(value)) {
-      if (!areArraysEqual(value, b[key], options)) return false;
+      if (!areArraysEqual(value, b_[key] as unknown[], options)) return false;
       continue;
     }
 
-    if (isObject(value) !== isObject(b[key])) return false;
+    if (isObject(value) !== isObject(b_[key])) return false;
 
     if (isObject(value)) {
-      if (!areObjectsEqual(value, b[key], options)) return false;
+      if (!areObjectsEqual(value, b_[key] as ObjectInstance | ObjectLiteral, options)) return false;
       continue;
     }
 
@@ -170,14 +186,10 @@ function areObjectsEqual(a, b, options = {}) {
   return true;
 }
 
-function areArraysEqual(a, b, options = {}) {
+function areArraysEqual(a: unknown[], b: unknown[], options?: AreEqualOptions) {
   if (!isArray(a) || !isArray(b)) {
     throw new Error('expected arrays');
   }
-
-  const { hooks } = options;
-
-  const hookOnCompareArrays = hooks?.onCompareArrays ?? (() => ({}));
 
   if (a === b) return true;
 
@@ -185,22 +197,32 @@ function areArraysEqual(a, b, options = {}) {
   a = [...a];
   b = [...b];
 
-  const { eq, ne } = hookOnCompareArrays(a, b) ?? {};
-  if (eq) return true;
-  if (ne) return false;
+  switch (options?.compare(a, b)) {
+    case 'DEFAULT_COMPARISON':
+    case undefined:
+      break;
+
+    case 'EQUAL':
+      return true;
+
+    case 'NOT_EQUAL':
+      return false;
+  }
 
   if (a.length !== b.length) return false;
 
   for (let value of a) {
     if (isArray(value)) {
-      const index = b.findIndex(e => isArray(e) && areArraysEqual(e, value, options));
+      const value_ = value;
+      const index = b.findIndex(e => isArray(e) && areArraysEqual(e, value_, options));
       if (index === -1) return false;
       b.splice(index, 1);
       continue;
     }
 
     if (isObject(value)) {
-      const index = b.findIndex(e => isObject(e) && areObjectsEqual(e, value, options));
+      const value_ = value;
+      const index = b.findIndex(e => isObject(e) && areObjectsEqual(e, value_, options));
       if (index === -1) return false;
       b.splice(index, 1);
       continue;
@@ -214,7 +236,7 @@ function areArraysEqual(a, b, options = {}) {
   return true;
 }
 
-function hasProperty(o, prop) {
+function hasProperty(o: ObjectInstance | ObjectLiteral, prop: string) {
   if (!isObject(o)) {
     throw new Error('expected object');
   }
@@ -222,17 +244,17 @@ function hasProperty(o, prop) {
   return Object.prototype.hasOwnProperty.call(o, prop);
 }
 
-function hasProperties(o, props) {
+function hasProperties(o: ObjectInstance | ObjectLiteral, props: string[]) {
   return props.every(prop => hasProperty(o, prop));
 }
 
-function filterProperties(o, arg) {
+function filterProperties<T>(o: ObjectLiteral<T>, arg: string[] | ((key: string, val: T) => boolean)) {
   return isArray(arg)
     ? filterPropsByWhitelist(o, arg)
     : filterPropsByFun(o, arg);
 }
 
-function filterPropsByWhitelist(o, props) {
+function filterPropsByWhitelist(o: ObjectLiteral, props: string[]) {
   return props.reduce((newObject, prop) => {
     return (prop in o)
       ? { ...newObject, [prop]: o[prop] }
@@ -240,18 +262,18 @@ function filterPropsByWhitelist(o, props) {
   }, {});
 }
 
-function filterPropsByFun(o, fun) {
+function filterPropsByFun<T>(o: ObjectLiteral<T>, fun: (key: string, val: T) => boolean) {
   const filteredEntries = Object.entries(o).filter(([key, val]) => fun(key, val));
   return Object.fromEntries(filteredEntries);
 }
 
-function rejectProperties(o, arg) {
+function rejectProperties<T>(o: ObjectLiteral<T>, arg: string[] | ((key: string, val: T) => boolean)) {
   return isArray(arg)
     ? rejectPropsByWhitelist(o, arg)
     : rejectPropsByFun(o, arg);
 }
 
-function rejectPropsByWhitelist(o, props) {
+function rejectPropsByWhitelist(o: ObjectLiteral, props: string[]) {
   return Object.keys(o).reduce((newObject, prop) => {
     return (props.includes(prop))
       ? newObject
@@ -259,18 +281,18 @@ function rejectPropsByWhitelist(o, props) {
   }, {});
 }
 
-function rejectPropsByFun(o, fun) {
+function rejectPropsByFun<T>(o: ObjectLiteral<T>, fun: (key: string, val: T) => boolean) {
   const filteredEntries = Object.entries(o).filter(([key, val]) => !fun(key, val));
   return Object.fromEntries(filteredEntries);
 }
 
-function takeProperties(o, arg) {
+function takeProperties<T>(o: ObjectLiteral<T>, arg: string[] | ((key: string, val: T) => boolean)) {
   return isArray(arg)
     ? takePropsByWhitelist(o, arg)
     : takePropsByFun(o, arg);
 }
 
-function takePropsByWhitelist(o, props) {
+function takePropsByWhitelist(o: ObjectLiteral, props: string[]) {
   const keys = Object.keys(o);
 
   const undefined_ =
@@ -284,7 +306,7 @@ function takePropsByWhitelist(o, props) {
   }, { filtered: {}, rejected: {}, undefined: undefined_ });
 }
 
-function takePropsByFun(o, fun) {
+function takePropsByFun<T>(o: ObjectLiteral<T>, fun: (key: string, val: T) => boolean) {
   const filteredKeys =
     Object.entries(o)
       .filter(([key, val]) => fun(key, val))
@@ -293,7 +315,7 @@ function takePropsByFun(o, fun) {
   return takePropsByWhitelist(o, filteredKeys);
 }
 
-function removeArrayElements(array, listOfValues) {
+function removeArrayElements<T = unknown>(array: T[], listOfValues: T[]): T[] {
   if (!isArray(array) || !isArray(listOfValues)) {
     throw new Error('expected array');
   }
@@ -305,17 +327,17 @@ function removeArrayElements(array, listOfValues) {
   return array;
 }
 
-function removeArrayElement(array, valueOrFun) {
+function removeArrayElement<T = unknown>(array: T[], valueOrFun: T | ((value: T) => boolean)): T[] {
   if (!isArray(array)) {
     throw new Error('expected array');
   }
 
   return (typeof valueOrFun === 'function')
-    ? removeArrayElementByFun(array, valueOrFun)
+    ? removeArrayElementByFun(array, valueOrFun as (value: T) => boolean)
     : removeArrayElementByValue(array, valueOrFun);
 }
 
-function removeArrayElementByValue(array, value) {
+function removeArrayElementByValue<T = unknown>(array: T[], value: T): T[] {
   const indexToRemove = array.indexOf(value);
 
   return (indexToRemove !== -1)
@@ -323,7 +345,7 @@ function removeArrayElementByValue(array, value) {
     : array;
 }
 
-function removeArrayElementByFun(array, fun) {
+function removeArrayElementByFun<T = unknown>(array: T[], fun: (value: T) => boolean): T[] {
   let indexToRemove = null;
 
   for (let i = 0; i < array.length; ++i) {
@@ -340,7 +362,7 @@ function removeArrayElementByFun(array, fun) {
   return removeArrayElementByIndex(array, indexToRemove);
 }
 
-function removeArrayElementByIndex(array, index) {
+function removeArrayElementByIndex<T = unknown>(array: T[], index: number): T[] {
   if (!isArray(array)) {
     throw new Error('expected array');
   }
@@ -352,7 +374,7 @@ function removeArrayElementByIndex(array, index) {
   return [...array.slice(0, index), ...array.slice(index + 1)];
 }
 
-function differenceArraysOfPrimitives(a1, a2) {
+function differenceArraysOfPrimitives<T = unknown>(a1: T[], a2: T[]): T[] {
   return a1.filter((e) => !a2.includes(e));
 }
 
@@ -370,7 +392,7 @@ function differenceArraysOfPrimitives(a1, a2) {
 //   }, {});
 // }
 
-function isObjectSubset(superObject, subObject, options = {}) {
+function isObjectSubset(superObject: ObjectInstance | ObjectLiteral, subObject: ObjectInstance | ObjectLiteral): boolean {
   if (!isObject(superObject) || !isObject(subObject)) {
     throw new Error('expected objects');
   }
@@ -382,13 +404,6 @@ function isObjectSubset(superObject, subObject, options = {}) {
   if (isObjectInstance(superObject)) {
     const str = superObject.toString();
     return str !== '[object Object]' && str === subObject.toString();
-  }
-
-  const { ignoreProperties } = options;
-
-  if (ignoreProperties) {
-    subObject = { ...subObject };
-    ignoreProperties.forEach(prop => delete subObject[prop]);
   }
 
   if (Object.keys(superObject).length < Object.keys(subObject).length) return false;
@@ -405,20 +420,20 @@ function isObjectSubset(superObject, subObject, options = {}) {
     if (isObject(superObject[key]) !== isObject(subObject[key])) return false;
 
     if (isObject(superObject[key])) {
-      return isObjectSubset(superObject[key], subObject[key], options);
+      return isObjectSubset(superObject[key], subObject[key] as ObjectInstance | ObjectLiteral);
     }
 
     if (isArray(superObject[key]) !== isArray(subObject[key])) return false;
 
     if (isArray(superObject[key])) {
-      return isArraySubset(superObject[key], subObject[key], options);
+      return isArraySubset(superObject[key], subObject[key] as unknown[]);
     }
 
     return false;
   });
 }
 
-function isArraySubset(superArray, subArray, options = {}) {
+function isArraySubset(superArray: unknown[], subArray: unknown[]): boolean {
   if (!isArray(superArray) || !isArray(subArray)) {
     throw new Error('expected arrays');
   }
@@ -432,14 +447,16 @@ function isArraySubset(superArray, subArray, options = {}) {
 
   for (let value of subArray) {
     if (isArray(value)) {
-      const index = superArray.findIndex(e => isArray(e) && isArraySubset(e, value, options));
+      const value_ = value;
+      const index = superArray.findIndex(e => isArray(e) && isArraySubset(e, value_));
       if (index === -1) return false;
       superArray.splice(index, 1);
       continue;
     }
 
     if (isObject(value)) {
-      const index = superArray.findIndex(e => isObject(e) && isObjectSubset(e, value, options));
+      const value_ = value;
+      const index = superArray.findIndex(e => isObject(e) && isObjectSubset(e, value_));
       if (index === -1) return false;
       superArray.splice(index, 1);
       continue;
@@ -453,30 +470,54 @@ function isArraySubset(superArray, subArray, options = {}) {
   return true;
 }
 
-function isPrimitive(value) {
+function isPrimitive(value: unknown) {
   return value !== Object(value);
 }
 
-function deepFreeze(o) {
+function deepFreeze(o: unknown[] | ObjectInstance | ObjectLiteral) {
   if (!isObject(o) && !isArray(o)) {
     throw new Error('expected object or array');
   }
 
-  Object.keys(o).forEach(prop => {
-    if ((!isObject(o[prop]) || !isArray(o[prop])) && !Object.isFrozen(o[prop])) {
-      deepFreeze(o[prop]);
+  Object.keys(o).forEach((prop) => {
+    const o_ = o as any;
+    if ((!isObject(o_[prop]) || !isArray(o_[prop])) && !Object.isFrozen(o_[prop])) {
+      deepFreeze(o_[prop]);
     }
   });
 
   return Object.freeze(o);
 }
 
-function sortProperties(o) {
+function sortProperties(o: ObjectLiteral) {
   return Object.fromEntries(Object.entries(o).sort(([k1], [k2]) => k1 < k2 ? -1 : 1));
 }
 
-function range(options) {
-  const unknownOptions = rejectProperties(options, ['start', 'count', 'endInclusive', 'endExclusive']);
+type RangeOptionsWithCount = {
+  start?: number;
+  count: number;
+  endInclusive?: never;
+  endExclusive?: never;
+};
+
+type RangeOptionsWithEndInclusive = {
+  start?: number;
+  count?: never;
+  endInclusive: number;
+  endExclusive?: never;
+};
+
+type RangeOptionsWithEndExclusive = {
+  start?: number;
+  count?: never;
+  endInclusive?: never;
+  endExclusive: number;
+};
+
+type RangeOptions = RangeOptionsWithCount | RangeOptionsWithEndInclusive | RangeOptionsWithEndExclusive;
+
+function range(options: RangeOptions) {
+  const unknownOptions = rejectProperties<unknown>(options, ['start', 'count', 'endInclusive', 'endExclusive']);
 
   if (!isEmptyObjectLiteral(unknownOptions)) {
     throw new Error(`unknown options: ${Object.keys(unknownOptions).join(', ')}`);
@@ -486,21 +527,26 @@ function range(options) {
     throw new Error('expected either `endInclusive`, `endExclusive` or `count` to be specified');
   }
 
-  if (options.endInclusive && options.start > options.endInclusive) {
-    throw new Error('`endInclusive` should be greater or equal than `start`');
-  }
-
-  if (options.endExclusive && options.start >= options.endExclusive) {
-    throw new Error('`endExclusive` should be greater than `start`');
+  if (Number(!!options?.count) + Number(!!options?.endInclusive) + Number(!!options?.endExclusive) > 1) {
+    throw new Error('expected only one of the properties `endInclusive`, `endExclusive`, or `count` to be specified.');
   }
 
   const start = options.start ?? 0;
-  const count = options.count ?? ((options.endInclusive) ? options.endInclusive - start + 1 : options.endExclusive - start);
+
+  if (options.endInclusive && start > options.endInclusive) {
+    throw new Error('`endInclusive` should be greater or equal than `start`');
+  }
+
+  if (options.endExclusive && start >= options.endExclusive) {
+    throw new Error('`endExclusive` should be greater than `start`');
+  }
+
+  const count = options.count ?? ((options.endInclusive) ? options.endInclusive - start + 1 : options.endExclusive as number - start);
 
   return [...Array(count).keys()].map(i => i + start);
 }
 
-function duplicate(value, count, transformFun = (v) => v) {
+function duplicate<T = unknown>(value: T, count: number, transformFun = (v: T, _i: number) => v) {
   return [...Array(count).keys()].map(i => transformFun(value, i));
 }
 

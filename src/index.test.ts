@@ -1,3 +1,5 @@
+import { expect, test } from 'vitest';
+
 import {
   areArraysEqual,
   areObjectsEqual,
@@ -107,7 +109,6 @@ test('filterProperties using whitelist of props', () => {
   expect(filterProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ foo: 1, bar: 2 });
   expect(filterProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ foo: 1, bar: 2 });
   expect(filterProperties({ foo: 1, bar: 2 }, ['foo', 'foo'])).toEqual({ foo: 1 });
-  expect(filterProperties({ foo: 1, foo: 2, bar: 3 }, ['foo'])).toEqual({ foo: 1, foo: 2 });
 });
 
 test('filterProperties using function', () => {
@@ -121,8 +122,6 @@ test('rejectProperties using whitelist of props', () => {
   expect(rejectProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({});
   expect(rejectProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({});
   expect(rejectProperties({ foo: 1, bar: 2 }, ['foo', 'foo'])).toEqual({ bar: 2 });
-  expect(rejectProperties({ foo: 1, foo: 2, bar: 3 }, ['foo'])).toEqual({ bar: 3 });
-  expect(rejectProperties({ foo: 1, foo: 2, bar: 3 }, ['bar'])).toEqual({ foo: 1, foo: 2 });
   expect(rejectProperties({ foo: 1, bar: 2 }, ['baz'])).toEqual({ foo: 1, bar: 2 });
 });
 
@@ -138,7 +137,6 @@ test('takeProperties using whitelist of props', () => {
   expect(takeProperties({ foo: 1, bar: 2 }, ['bar', 'foo'])).toEqual({ filtered: { foo: 1, bar: 2 }, rejected: {}, undefined: {} });
   expect(takeProperties({ foo: 1, bar: 2 }, ['bar', 'foo', 'baz'])).toEqual({ filtered: { foo: 1, bar: 2 }, rejected: {}, undefined: { baz: undefined } });
   expect(takeProperties({ foo: 1, bar: 2 }, ['baz'])).toEqual({ filtered: {}, rejected: { foo: 1, bar: 2 }, undefined: { baz: undefined } });
-  expect(takeProperties({ foo: 1, foo: 2, bar: 3 }, ['foo'])).toEqual({ filtered: { foo: 1, foo: 2 }, rejected: { bar: 3 }, undefined: {} });
 });
 
 test('takeProperties using function', () => {
