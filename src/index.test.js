@@ -238,8 +238,7 @@ test('removeArrayElements', () => {
 });
 
 test('sortProperties', () => {
-  expect(Object.keys({ b: 2, a: 1, c: 3 })).toEqual(['b', 'a', 'c']);
-  expect(Object.keys({ b: 2, a: 1, c: 3 })).not.toEqual(['a', 'b', 'c']);
+  expect(Object.keys(sortProperties({ b: 2, a: 1, c: 3 }))).not.toEqual(['b', 'a', 'c']);
   expect(Object.keys(sortProperties({ b: 2, a: 1, c: 3 }))).toEqual(['a', 'b', 'c']);
 });
 
@@ -256,4 +255,5 @@ test('range', () => {
 test('duplicate', () => {
   expect(duplicate(2, 3)).toEqual([2, 2, 2]);
   expect(duplicate(['foo', 0], 3)).toEqual([['foo', 0], ['foo', 0], ['foo', 0]]);
+  expect(duplicate({ num: 1 }, 2, (value, i) => ({ ...value, id: i + 1 }))).toEqual([{ num: 1, id: 1 }, { num: 1, id: 2 }]);
 });
