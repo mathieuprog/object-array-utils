@@ -76,6 +76,10 @@ import { takeProperties } from 'object-array-utils';
 takeProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { filtered: { prop1: 1 }, rejected: { prop2: 2 } }
 takeProperties({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { filtered: { prop1: 1 }, rejected: { prop2: 2 } }
 
+import { sortProperties } from 'object-array-utils';
+
+sortProperties({ prop2: 2, prop1: 1 }) // { prop1: 1, prop2: 2 }
+
 import { removeArrayElement } from 'object-array-utils';
 
 removeArrayElement([1, 1, 2, 3], 1) // [1, 2, 3]
@@ -154,6 +158,22 @@ import { isObjectLiteralWhereEvery, isArray } from 'object-array-utils';
 
 isObjectLiteralWhereEvery({ foo: [1], bar: [2, 3] }, isArray) // true
 isObjectLiteralWhereEvery({}, isArray) // false
+
+import { duplicate } from 'duplicate';
+
+duplicate(1, 3) // [1, 1, 1]
+duplicate(1, 3, (value, i) => value + 1) // [1, 2, 3]
+duplicate({ name: 'John' }, 2, (v, i) => ({ id: i + 1, ...v }))  // [{ id: 1, name: 'John' }, { id: 2, name: 'John' }]
+
+import { range } from 'range';
+
+range({ count: 2 }) // [0, 1]
+range({ endInclusive: 2 }) // [0, 1, 2]
+range({ endExclusive: 2 }) // [0, 1]
+range({ start: 5, count: 2 }) // [5, 6]
+range({ start: 5, endInclusive: 7 }) // [5, 6, 7]
+range({ start: 5, endInclusive: 5 }) // [5]
+range({ start: 5, endExclusive: 7 }) // [5, 6]
 ```
 
 ## Limitations
