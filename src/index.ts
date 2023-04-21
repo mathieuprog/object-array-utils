@@ -550,6 +550,24 @@ function duplicate<T = unknown>(value: T, count: number, transformFun = (v: T, _
   return [...Array(count).keys()].map(i => transformFun(value, i));
 }
 
+function unique<T>(a: T[], fun?: (val: T) => unknown) {
+  if (!fun) {
+    return [...new Set(a)];
+  }
+
+  const uniqueMap = new Map<unknown, T>();
+
+  for (const item of a) {
+    const key = fun(item);
+
+    if (!uniqueMap.has(key)) {
+      uniqueMap.set(key, item);
+    }
+  }
+
+  return Array.from(uniqueMap.values());
+}
+
 export {
   areArraysEqual,
   areObjectsEqual,
@@ -582,5 +600,6 @@ export {
   removeArrayElementByIndex,
   removeArrayElements,
   sortProperties,
-  takeProperties
+  takeProperties,
+  unique
 }
