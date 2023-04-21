@@ -163,13 +163,13 @@ import { differenceArraysOfPrimitives } from 'object-array-utils';
 
 differenceArraysOfPrimitives([1, 2, 3, 9], [1, 3, 4]) // [2, 9]
 
-import { duplicate } from 'duplicate';
+import { duplicate } from 'object-array-utils';
 
 duplicate(1, 3) // [1, 1, 1]
 duplicate(1, 3, (value, i) => value + 1) // [1, 2, 3]
 duplicate({ name: 'John' }, 2, (v, i) => ({ id: i + 1, ...v }))  // [{ id: 1, name: 'John' }, { id: 2, name: 'John' }]
 
-import { range } from 'range';
+import { range } from 'object-array-utils';
 
 range({ count: 2 }) // [0, 1]
 range({ endInclusive: 2 }) // [0, 1, 2]
@@ -178,6 +178,14 @@ range({ start: 5, count: 2 }) // [5, 6]
 range({ start: 5, endInclusive: 7 }) // [5, 6, 7]
 range({ start: 5, endInclusive: 5 }) // [5]
 range({ start: 5, endExclusive: 7 }) // [5, 6]
+
+import { unique } from 'object-array-utils';
+
+unique([1, 1, 2]) // [1, 2]
+unique(
+  [{ name: 'John', age: 27 }, { name: 'James', age: 42 }, { name: 'Joe', age: 27 }],
+  ({ age }) => age
+)  // [{ name: 'John', age: 27 }, { name: 'James', age: 42 }]
 ```
 
 ## Limitations
