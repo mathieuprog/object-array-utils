@@ -23,7 +23,8 @@ import {
   removeArrayElementByIndex,
   removeArrayElements,
   sortProperties,
-  takeProperties
+  takeProperties,
+  unique
 } from './index';
 
 test('areValuesEqual', () => {
@@ -263,4 +264,16 @@ test('differenceArraysOfPrimitives', () => {
   expect(differenceArraysOfPrimitives([1, 2, 3, 9], [1, 3, 4])).toEqual([2, 9]);
   expect(differenceArraysOfPrimitives(['foo'], ['bar', 'foo'])).toEqual([]);
   expect(differenceArraysOfPrimitives(['bar', 'foo'], ['foo'])).toEqual(['bar']);
+});
+
+test('unique', () => {
+  expect(unique([5, 1, 2, 1, 4, '1'])).toEqual([5, 1, 2, 4, '1']);
+  expect(unique([{ x: 2 }, { x: 2 }])).toEqual([{ x: 2 }, { x: 2 }]);
+
+  expect(unique(
+    [{ x: 2, y: 1 }, { x: 1, y: 2 }, { x: 2, y: 2 }, { x: 1, y: 1 }],
+    ({ x }) => x
+  )).toEqual(
+    [{ x: 2, y: 1 }, { x: 1, y: 2 }]
+  );
 });
