@@ -1,6 +1,6 @@
 # `object-array-utils`
 
-`object-array-utils` allows to check the type of an object or an array.
+`object-array-utils` is a JavaScript library offering utilities for advanced array and object manipulation.
 
 ```javascript
 import { isObjectLiteral } from 'object-array-utils';
