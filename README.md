@@ -117,6 +117,10 @@ import { areValuesEqual } from 'object-array-utils';
 
 areValuesEqual(new Date(), new Date()) // true
 
+import { cloneShape } from 'object-array-utils';
+
+cloneShape({ foo: [{ bar: 1 }] })
+
 import { deepFreeze } from 'object-array-utils';
 
 deepFreeze({ foo: 1 })
