@@ -474,6 +474,28 @@ function isPrimitive(value: unknown) {
   return value !== Object(value);
 }
 
+function cloneShape<T = unknown>(value: T): T {
+  if (isObjectLiteral(value)) {
+    return cloneShapeOfObjectLiteral(value) as any;
+  }
+
+  if (isArray(value)) {
+    return cloneShapeOfArray(value) as any;
+  }
+
+  return value;
+}
+
+function cloneShapeOfObjectLiteral(o: ObjectLiteral) {
+  return Object.fromEntries(
+    Object.entries(o).map(([key, val]) => [key, cloneShape(val)])
+  );
+}
+
+function cloneShapeOfArray(a: unknown[]) {
+  return a.map((e) => cloneShape(e));
+}
+
 function deepFreeze(o: unknown[] | ObjectInstance | ObjectLiteral) {
   if (!isObject(o) && !isArray(o)) {
     throw new Error('expected object or array');
@@ -572,6 +594,7 @@ export {
   areArraysEqual,
   areObjectsEqual,
   areValuesEqual,
+  cloneShape,
   deepFreeze,
   differenceArraysOfPrimitives,
   duplicate,
