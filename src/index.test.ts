@@ -4,6 +4,7 @@ import {
   areArraysEqual,
   areObjectsEqual,
   areValuesEqual,
+  cloneShape,
   deepFreeze,
   differenceArraysOfPrimitives,
   duplicate,
@@ -276,4 +277,26 @@ test('unique', () => {
   )).toEqual(
     [{ x: 2, y: 1 }, { x: 1, y: 2 }]
   );
+});
+
+test('cloneShape', () => {
+  expect(cloneShape(null)).toEqual(null);
+  expect(cloneShape('foo')).toEqual('foo');
+
+  const o = [1, { b: null, c: { d: [2, 5, 1, 0, {c: 3, d: 4}], e: "world" }, a: "foo" }] as const;
+  const clonedO = cloneShape(o);
+
+  expect(o[1].b).toBe(null);
+  expect(clonedO[1].b).toBe(null);
+
+  expect(o[1].a).toBe('foo');
+  expect(clonedO[1].a).toBe('foo');
+
+  expect(o[1].c).toEqual({ d: [2, 5, 1, 0, {c: 3, d: 4}], e: "world" });
+  expect(clonedO[1].c).toEqual({ d: [2, 5, 1, 0, {c: 3, d: 4}], e: "world" });
+
+  expect(o === clonedO).toBeFalsy();
+  expect(o[1] === clonedO[1]).toBeFalsy();
+  expect(o[1].c === clonedO[1].c).toBeFalsy();
+  expect(o[1].c.d === clonedO[1].c.d).toBeFalsy();
 });
