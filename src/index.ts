@@ -131,8 +131,12 @@ function areObjectsEqual(a: ObjectLiteral | ObjectInstance, b: ObjectLiteral | O
   if (a === b) return true;
 
   // ensure immutability
-  a = { ...a };
-  b = { ...b };
+  if (isObjectLiteral(a)) {
+    a = { ...a };
+  }
+  if (isObjectLiteral(b)) {
+    b = { ...b };
+  }
 
   switch (options?.compare(a, b)) {
     case 'DEFAULT_COMPARISON':
