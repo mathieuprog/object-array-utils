@@ -252,51 +252,51 @@ function hasProperties(o: ObjectInstance | ObjectLiteral, props: string[]) {
   return props.every(prop => hasProperty(o, prop));
 }
 
-function filterProperties<T>(o: ObjectLiteral<T>, arg: string[] | ((key: string, val: T) => boolean)) {
+function filterProperties<T = unknown>(o: object, arg: string[] | ((key: string, val: T) => boolean)) {
   return isArray(arg)
     ? filterPropsByWhitelist(o, arg)
-    : filterPropsByFun(o, arg);
+    : filterPropsByFun<T>(o, arg);
 }
 
-function filterPropsByWhitelist(o: ObjectLiteral, props: string[]) {
+function filterPropsByWhitelist(o: object, props: string[]) {
   return props.reduce((newObject, prop) => {
     return (prop in o)
-      ? { ...newObject, [prop]: o[prop] }
+      ? { ...newObject, [prop]: o[prop as keyof object] }
       : newObject;
   }, {});
 }
 
-function filterPropsByFun<T>(o: ObjectLiteral<T>, fun: (key: string, val: T) => boolean) {
+function filterPropsByFun<T>(o: object, fun: (key: string, val: T) => boolean) {
   const filteredEntries = Object.entries(o).filter(([key, val]) => fun(key, val));
   return Object.fromEntries(filteredEntries);
 }
 
-function rejectProperties<T>(o: ObjectLiteral<T>, arg: string[] | ((key: string, val: T) => boolean)) {
+function rejectProperties<T = unknown>(o: object, arg: string[] | ((key: string, val: T) => boolean)) {
   return isArray(arg)
     ? rejectPropsByWhitelist(o, arg)
-    : rejectPropsByFun(o, arg);
+    : rejectPropsByFun<T>(o, arg);
 }
 
-function rejectPropsByWhitelist(o: ObjectLiteral, props: string[]) {
+function rejectPropsByWhitelist(o: object, props: string[]) {
   return Object.keys(o).reduce((newObject, prop) => {
     return (props.includes(prop))
       ? newObject
-      : { ...newObject, [prop]: o[prop] };
+      : { ...newObject, [prop]: o[prop as keyof object] };
   }, {});
 }
 
-function rejectPropsByFun<T>(o: ObjectLiteral<T>, fun: (key: string, val: T) => boolean) {
+function rejectPropsByFun<T>(o: object, fun: (key: string, val: T) => boolean) {
   const filteredEntries = Object.entries(o).filter(([key, val]) => !fun(key, val));
   return Object.fromEntries(filteredEntries);
 }
 
-function takeProperties<T>(o: ObjectLiteral<T>, arg: string[] | ((key: string, val: T) => boolean)) {
+function takeProperties<T = unknown>(o: object, arg: string[] | ((key: string, val: T) => boolean)) {
   return isArray(arg)
     ? takePropsByWhitelist(o, arg)
-    : takePropsByFun(o, arg);
+    : takePropsByFun<T>(o, arg);
 }
 
-function takePropsByWhitelist(o: ObjectLiteral, props: string[]) {
+function takePropsByWhitelist(o: object, props: string[]) {
   const keys = Object.keys(o);
 
   const undefined_ =
@@ -305,12 +305,12 @@ function takePropsByWhitelist(o: ObjectLiteral, props: string[]) {
 
   return keys.reduce(({ filtered, rejected, undefined }, prop) => {
     return (props.includes(prop))
-      ? { filtered: { ...filtered, [prop]: o[prop] }, rejected, undefined }
-      : { filtered, rejected: { ...rejected, [prop]: o[prop] }, undefined }
+      ? { filtered: { ...filtered, [prop]: o[prop as keyof object] }, rejected, undefined }
+      : { filtered, rejected: { ...rejected, [prop]: o[prop as keyof object] }, undefined }
   }, { filtered: {}, rejected: {}, undefined: undefined_ });
 }
 
-function takePropsByFun<T>(o: ObjectLiteral<T>, fun: (key: string, val: T) => boolean) {
+function takePropsByFun<T>(o: object, fun: (key: string, val: T) => boolean) {
   const filteredKeys =
     Object.entries(o)
       .filter(([key, val]) => fun(key, val))

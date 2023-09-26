@@ -115,8 +115,8 @@ test('filterProperties using whitelist of props', () => {
 });
 
 test('filterProperties using function', () => {
-  expect(filterProperties({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ foo: 1 });
-  expect(filterProperties({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({});
+  expect(filterProperties<number>({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ foo: 1 });
+  expect(filterProperties<number>({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({});
 });
 
 test('rejectProperties using whitelist of props', () => {
@@ -129,9 +129,9 @@ test('rejectProperties using whitelist of props', () => {
 });
 
 test('rejectProperties using function', () => {
-  expect(rejectProperties({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ bar: 2 });
-  expect(rejectProperties({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({ foo: 3, bar: 2 });
-  expect(rejectProperties({ foo: 3, bar: 2 }, (_key, val) => val > 1)).toEqual({});
+  expect(rejectProperties<number>({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ bar: 2 });
+  expect(rejectProperties<number>({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({ foo: 3, bar: 2 });
+  expect(rejectProperties<number>({ foo: 3, bar: 2 }, (_key, val) => val > 1)).toEqual({});
 });
 
 test('takeProperties using whitelist of props', () => {
@@ -143,8 +143,8 @@ test('takeProperties using whitelist of props', () => {
 });
 
 test('takeProperties using function', () => {
-  expect(takeProperties({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ filtered: { foo: 1 }, rejected: { bar: 2 }, undefined: {} });
-  expect(takeProperties({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({filtered: {}, rejected: { foo: 3, bar: 2 }, undefined: {} });
+  expect(takeProperties<number>({ foo: 1, bar: 2 }, (_key, val) => val < 2)).toEqual({ filtered: { foo: 1 }, rejected: { bar: 2 }, undefined: {} });
+  expect(takeProperties<number>({ foo: 3, bar: 2 }, (_key, val) => val < 2)).toEqual({filtered: {}, rejected: { foo: 3, bar: 2 }, undefined: {} });
 });
 
 test('isEmptyArray', () => {
