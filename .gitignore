@@ -3,6 +3,7 @@
 *.iml
 
 .lh
+.history
 
 /node_modules/
 /public/build/
