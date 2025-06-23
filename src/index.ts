@@ -500,19 +500,30 @@ function cloneShapeOfArray(a: unknown[]) {
   return a.map((e) => cloneShape(e));
 }
 
-function deepFreeze(o: unknown[] | ObjectInstance | ObjectLiteral) {
-  if (!isObject(o) && !isArray(o)) {
+type ObjectOrArray = unknown[] | Record<string | number | symbol, unknown>;
+
+function deepFreeze<T extends ObjectOrArray>(root: T): Readonly<T> {
+  if (!isObject(root) && !isArray(root)) {
     throw new Error('expected object or array');
   }
 
-  Object.keys(o).forEach((prop) => {
-    const o_ = o as any;
-    if ((!isObject(o_[prop]) || !isArray(o_[prop])) && !Object.isFrozen(o_[prop])) {
-      deepFreeze(o_[prop]);
-    }
-  });
+  const seen = new WeakSet<object>();
 
-  return Object.freeze(o);
+  const walk = (node: unknown): void => {
+    // Ignore primitives and already-seen objects
+    if ((!isObject(node) && !isArray(node)) || seen.has(node)) return;
+
+    seen.add(node as object);
+
+    for (const key of Object.keys(node)) {
+      walk((node as Record<string, unknown>)[key]);
+    }
+
+    Object.freeze(node);
+  };
+
+  walk(root);
+  return root as Readonly<T>;
 }
 
 function sortProperties(o: ObjectLiteral) {
