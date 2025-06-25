@@ -12,5 +12,7 @@ dist
 .DS_Store
 
 .vscode
+.cursorignore
+.cursorrules
 
 TODO.md
