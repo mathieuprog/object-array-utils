@@ -170,6 +170,22 @@ unique(
   [{ name: 'John', age: 27 }, { name: 'James', age: 42 }, { name: 'Joe', age: 27 }],
   ({ age }) => age
 )  // [{ name: 'John', age: 27 }, { name: 'James', age: 42 }]
+
+import { makeCopyOnWriteObjectSetter } from 'object-array-utils';
+
+const base = { a: 1, b: 2 };
+const set  = makeCopyOnWriteObjectSetter(base);
+
+// No-op: same value ⇒ original reference
+set('a', 1) === base; // true
+
+// First real update ⇒ shallow-clone
+const draft = set('a', 42);
+draft // { a: 42, b: 2 }
+base  // { a: 1,  b: 2 }
+
+// Further updates mutate the same draft
+set('b', 99) === draft; // true
 ```
 
 ## Limitations

@@ -546,6 +546,20 @@ function unique<T, K = T>(
   return result.length === array.length ? (array as T[]) : result;
 }
 
+function makeCopyOnWriteObjectSetter<T extends PlainObject>(base: T) {
+  if (!isPlainObject(base)) throw new Error('base must be a plain object');
+
+  let draft = base;
+
+  return function set<K extends keyof T>(key: K, value: T[K]): T {
+    if (Object.is(draft[key], value)) return draft;
+
+    if (draft === base) draft = { ...base };
+    draft[key] = value;
+    return draft;
+  };
+}
+
 export {
   areArraysEqual,
   arePlainObjectsEqual,
@@ -575,5 +589,6 @@ export {
   toSortedObject,
   unboxPrimitiveWrapper,
   partitionProperties,
-  unique
+  unique,
+  makeCopyOnWriteObjectSetter,
 }

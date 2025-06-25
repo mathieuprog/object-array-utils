@@ -26,8 +26,7 @@ import {
   removeArrayElements,
   toSortedObject,
   unique,
-  ComparisonResult,
-  type ComparePlainObjects,
+  makeCopyOnWriteObjectSetter,
   type AreNonPlainObjectsEqual
 } from './index';
 
@@ -357,4 +356,33 @@ test('deepClonePlain', () => {
   expect(o[1] === clonedO[1]).toBeFalsy();
   expect(o[1].c === clonedO[1].c).toBeFalsy();
   expect(o[1].c.d === clonedO[1].c.d).toBeFalsy();
+});
+
+test('makeCopyOnWriteObjectSetter, copy-on-write semantics', () => {
+  const base = { a: 1, b: 2 };
+  const set  = makeCopyOnWriteObjectSetter(base);
+
+  const r0 = set('a', 1);
+  expect(r0).toBe(base);
+
+  const r1 = set('a', 42);
+  expect(r1).not.toBe(base);
+  expect(r1).toEqual({ a: 42, b: 2 });
+
+  const r2 = set('b', 99);
+  expect(r2).toBe(r1);
+  expect(r2).toEqual({ a: 42, b: 99 });
+
+  const r3 = set('b', 99);
+  expect(r3).toBe(r2);
+});
+
+test('makeCopyOnWriteObjectSetter, shallow clone only', () => {
+  const base = { a: { x: 1 }, b: 2 };
+  const set  = makeCopyOnWriteObjectSetter(base);
+
+  const updated = set('b', 3);
+
+  expect(updated).not.toBe(base);
+  expect(updated.a).toBe(base.a);
 });
