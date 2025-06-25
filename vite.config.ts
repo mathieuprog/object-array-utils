@@ -6,9 +6,11 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   test: {
     globals: true,
-    // if you have few tests, try commenting one
-    // or both out to improve performance:
-    threads: false,
+    poolOptions: {
+      threads: {
+        singleThread: true,
+      },
+    },
     isolate: true,
   },
   resolve: {
