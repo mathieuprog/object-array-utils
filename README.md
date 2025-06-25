@@ -3,29 +3,17 @@
 `object-array-utils` is a JavaScript library offering utilities for advanced array and object manipulation.
 
 ```javascript
-import { isObjectLiteral } from 'object-array-utils';
+import { isPlainObject } from 'object-array-utils';
 
-isObjectLiteral({ prop: 1 }) // true
-isObjectLiteral(new Date()) // false
-isObjectLiteral([1]) // false
+isPlainObject({ prop: 1 }) // true
+isPlainObject(new Date()) // false
+isPlainObject([1]) // false
 
-import { isEmptyObjectLiteral } from 'object-array-utils';
+import { isEmptyPlainObject } from 'object-array-utils';
 
-isEmptyObjectLiteral({}) // true
-isEmptyObjectLiteral(new Date()) // false
-isEmptyObjectLiteral([]) // false
-
-import { isObjectInstance } from 'object-array-utils';
-
-isObjectInstance({ prop: 1 }) // false
-isObjectInstance(new Date()) // true
-isObjectInstance([1]) // false
-
-import { isObject } from 'object-array-utils';
-
-isObject({ prop: 1 }) // true
-isObject(new Date()) // true
-isObject([1]) // false
+isEmptyPlainObject({}) // true
+isEmptyPlainObject(new Date()) // false
+isEmptyPlainObject([]) // false
 
 import { isArray } from 'object-array-utils';
 
@@ -34,19 +22,6 @@ isArray([1]) // true
 import { isEmptyArray } from 'object-array-utils';
 
 isEmptyArray([]) // true
-
-import { isArrayOfObjects } from 'object-array-utils';
-
-isArrayOfObjects([{ prop: 1 }, new Date()]) // true
-isArrayOfObjects([1]) // false
-isArrayOfObjects([]) // false
-
-import { isArrayOfObjectLiterals } from 'object-array-utils';
-
-isArrayOfObjectLiterals([{ prop: 1 }, { prop: 2 }]) // true
-isArrayOfObjectLiterals([{ prop: 1 }, new Date()]) // false
-isArrayOfObjectLiterals([1]) // false
-isArrayOfObjectLiterals([]) // false
 
 import { isNullOrUndefined } from 'object-array-utils';
 
@@ -61,24 +36,24 @@ import { hasProperties } from 'object-array-utils';
 
 hasProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop2']) // true
 
-import { filterProperties } from 'object-array-utils';
+import { pickProperties } from 'object-array-utils';
 
-filterProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { prop1: 1 }
-filterProperties<number>({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { prop1: 1 }
+pickProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { prop1: 1 }
+pickProperties<number>({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { prop1: 1 }
 
-import { rejectProperties } from 'object-array-utils';
+import { omitProperties } from 'object-array-utils';
 
-rejectProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { prop2: 2 }
-rejectProperties<number>({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { prop2: 2 }
+omitProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { prop2: 2 }
+omitProperties<number>({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { prop2: 2 }
 
-import { takeProperties } from 'object-array-utils';
+import { partitionProperties } from 'object-array-utils';
 
-takeProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { filtered: { prop1: 1 }, rejected: { prop2: 2 } }
-takeProperties<number>({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { filtered: { prop1: 1 }, rejected: { prop2: 2 } }
+partitionProperties({ prop1: 1, prop2: 2 }, ['prop1', 'prop3']) // { picked: { prop1: 1 }, omitted: { prop2: 2 }, missingKeys: ['prop3'] }
+partitionProperties<number>({ prop1: 1, prop2: 2 }, (_key, val) => val < 2) // { picked: { prop1: 1 }, omitted: { prop2: 2 }, missingKeys: [] }
 
-import { sortProperties } from 'object-array-utils';
+import { toSortedObject } from 'object-array-utils';
 
-sortProperties({ prop2: 2, prop1: 1 }) // { prop1: 1, prop2: 2 }
+toSortedObject({ prop2: 2, prop1: 1 }) // { prop1: 1, prop2: 2 }
 
 import { removeArrayElement } from 'object-array-utils';
 
@@ -94,36 +69,43 @@ import { removeArrayElements } from 'object-array-utils';
 removeArrayElements([1, 1, 2, 3], [1, 2]) // [1, 3]
 removeArrayElements([1, 1, 2, 3], [1, 2, 1]) // [3]
 
-import { isObjectSubset } from 'object-array-utils';
+import { isPlainObjectSubset } from 'object-array-utils';
 
-isObjectSubset({ prop1: 1, prop2: 2 }, { prop1: 1 }) // true
-isObjectSubset({ prop1: { foo: 1, bar: 2 } }, prop2: 2 }, { prop1: { bar: 2 } }) // true
-isObjectSubset({ prop1: [1, 2], prop2: 2 }, { prop1: [2] }) // true
+isPlainObjectSubset({ prop1: 1, prop2: 2 }, { prop1: 1 }) // true
+isPlainObjectSubset({ prop1: { foo: 1, bar: 2 } }, prop2: 2 }, { prop1: { bar: 2 } }) // true
+isPlainObjectSubset({ prop1: [1, 2], prop2: 2 }, { prop1: [2] }) // true
 
 import { isArraySubset } from 'object-array-utils';
 
 isArraySubset([1, 2], [1]) // true
 isArraySubset([1, { foo: 1, bar: 2 }], [{ bar: 2 }]) // true
 
-import { areObjectsEqual } from 'object-array-utils';
+import { arePlainObjectsEqual, type AreNonPlainObjectsEqual } from 'object-array-utils';
 
-areObjectsEqual({ prop1: 1, prop2: 2 }, { prop2: 2, prop1: 1 }) // true
+const areNonPlainObjectsEqual: AreNonPlainObjectsEqual = ((o1, o2) => {
+  if (o1 instanceof Date && o2 instanceof Date) return o1.getTime() === o2.getTime();
+  throw new Error();
+});
+const opts = { areNonPlainObjectsEqual, unboxPrimitives: true, unorderedArrays: true };
+arePlainObjectsEqual({ prop1: 1, prop2: 2 }, { prop2: 2, prop1: 1 }, opts) // true
 
-import { areArraysEqual } from 'object-array-utils';
+import { areArraysEqual, type AreNonPlainObjectsEqual } from 'object-array-utils';
 
-areArraysEqual([1, { prop1: 1, prop2: 2 }], [{ prop2: 2, prop1: 1 }, 1]) // true
+const opts = { areNonPlainObjectsEqual, unboxPrimitives: true, unorderedArrays: true };
+areArraysEqual([1, { prop1: 1, prop2: 2 }], [{ prop2: 2, prop1: 1 }, 1], opts) // true
 
-import { areValuesEqual } from 'object-array-utils';
+import { areDataEqual } from 'object-array-utils';
 
-areValuesEqual(new Date(), new Date()) // true
+const opts = { areNonPlainObjectsEqual, unboxPrimitives: true, unorderedArrays: true };
+areDataEqual(new Date(), new Date(), opts) // true
 
-import { cloneShape } from 'object-array-utils';
+import { deepClonePlain } from 'object-array-utils';
 
-cloneShape({ foo: [{ bar: 1 }] })
+deepClonePlain({ foo: [{ bar: 1 }] })
 
-import { deepFreeze } from 'object-array-utils';
+import { deepFreezePlain } from 'object-array-utils';
 
-deepFreeze({ foo: 1 })
+deepFreezePlain({ foo: 1 })
 
 import { isPrimitive } from 'object-array-utils';
 
@@ -139,39 +121,37 @@ isPrimitive({}) // false
 isPrimitive(new Number(1)) // false
 isPrimitive((x) => x) // false
 
-import { isArrayOfPrimitives } from 'object-array-utils';
+import { isPrimitiveWrapper } from 'object-array-utils';
 
-isArrayOfPrimitives([1, 'foo']) // true
-isArrayOfPrimitives([new Number(1), 'foo']) // false
-isArrayOfPrimitives([]) // false
+isPrimitiveWrapper(new Number(5)) // true
+isPrimitiveWrapper(Number(5)) // false
+isPrimitiveWrapper(5) // false
 
-import { isArrayOfType } from 'object-array-utils';
+import { unboxPrimitiveWrapper } from 'object-array-utils';
 
-isArrayOfType(['foo', 'bar'], 'string') // true
-isArrayOfType(['foo', 1], 'string') // false
-isArrayOfType([1, 2], 'number') // true
-isArrayOfType([], 'string') // false
+unboxPrimitiveWrapper(new Number(5)) // 5
+unboxPrimitiveWrapper(5) // 5
 
-import { isArrayWhereEvery, isObjectLiteral } from 'object-array-utils';
+import { isArrayWhereEvery, isPlainObject } from 'object-array-utils';
 
-isArrayWhereEvery([{ foo: 1 }, { bar: 2 }], isObjectLiteral) // true
-isArrayWhereEvery([{ foo: 1 }, new Date()], isObjectLiteral) // false
-isArrayWhereEvery([], isObjectLiteral) // false
+isArrayWhereEvery([{ foo: 1 }, { bar: 2 }], isPlainObject) // true
+isArrayWhereEvery([{ foo: 1 }, new Date()], isPlainObject) // false
+isArrayWhereEvery([], isPlainObject) // false
 
-import { isObjectLiteralWhereEvery, isArray } from 'object-array-utils';
+import { isPlainObjectWhereEvery, isArray } from 'object-array-utils';
 
-isObjectLiteralWhereEvery({ foo: [1], bar: [2, 3] }, isArray) // true
-isObjectLiteralWhereEvery({}, isArray) // false
+isPlainObjectWhereEvery({ foo: [1], bar: [2, 3] }, isArray) // true
+isPlainObjectWhereEvery({}, isArray) // false
 
-import { differenceArraysOfPrimitives } from 'object-array-utils';
+import { differencePrimitives } from 'object-array-utils';
 
-differenceArraysOfPrimitives([1, 2, 3, 9], [1, 3, 4]) // [2, 9]
+differencePrimitives([1, 2, 3, 9], [1, 3, 4]) // [2, 9]
 
-import { duplicate } from 'object-array-utils';
+import { repeat } from 'object-array-utils';
 
-duplicate(1, 3) // [1, 1, 1]
-duplicate(1, 3, (value, i) => value + 1) // [1, 2, 3]
-duplicate({ name: 'John' }, 2, (v, i) => ({ id: i + 1, ...v }))  // [{ id: 1, name: 'John' }, { id: 2, name: 'John' }]
+repeat(1, 3) // [1, 1, 1]
+repeat(1, 3, (value, i) => value + 1) // [1, 2, 3]
+repeat({ name: 'John' }, 2, (v, i) => ({ id: i + 1, ...v }))  // [{ id: 1, name: 'John' }, { id: 2, name: 'John' }]
 
 import { range } from 'object-array-utils';
 
@@ -197,8 +177,9 @@ unique(
 `isObjectSubset` and `isArraySubset` may result into false negatives when dealing with arrays of object literals. For example:
 
 ```javascript
-isArraySubset([{ foo: 1 }, { bar: 2 }], [{}, { bar: 2 }]) // true
-isArraySubset([{ foo: 1 }, { bar: 2 }], [{}, { foo: 1 }]) // false
+const opts = { areNonPlainObjectsEqual, unboxPrimitives: true, unorderedArrays: true };
+isArraySubset([{ foo: 1 }, { bar: 2 }], [{}, { bar: 2 }], opts) // true
+isArraySubset([{ foo: 1 }, { bar: 2 }], [{}, { foo: 1 }], opts) // false
 ```
 
 ## Installation
