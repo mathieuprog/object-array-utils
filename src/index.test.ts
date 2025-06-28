@@ -12,6 +12,7 @@ import {
   omitProperties,
   partitionProperties,
   hasProperties,
+  hasArrayDuplicates,
   isArrayWhereEvery,
   isEmptyArray,
   isEmptyPlainObject,
@@ -385,4 +386,74 @@ test('makeCopyOnWriteObjectSetter, shallow clone only', () => {
 
   expect(updated).not.toBe(base);
   expect(updated.a).toBe(base.a);
+});
+
+test('hasArrayDuplicates', () => {
+  // Basic cases with duplicates
+  expect(hasArrayDuplicates([1, 2, 3, 2])).toBeTruthy();
+  expect(hasArrayDuplicates([1, 1, 2, 3])).toBeTruthy();
+  expect(hasArrayDuplicates(['a', 'b', 'a'])).toBeTruthy();
+  expect(hasArrayDuplicates([true, false, true])).toBeTruthy();
+
+  // Basic cases without duplicates
+  expect(hasArrayDuplicates([1, 2, 3, 4])).toBeFalsy();
+  expect(hasArrayDuplicates(['a', 'b', 'c'])).toBeFalsy();
+  expect(hasArrayDuplicates([true, false])).toBeFalsy();
+
+  // Edge cases
+  expect(hasArrayDuplicates([])).toBeFalsy();
+  expect(hasArrayDuplicates([1])).toBeFalsy();
+  expect(hasArrayDuplicates([null, undefined])).toBeFalsy();
+  expect(hasArrayDuplicates([null, null])).toBeTruthy();
+  expect(hasArrayDuplicates([undefined, undefined])).toBeTruthy();
+
+  // Mixed types (no duplicates due to type differences)
+  expect(hasArrayDuplicates([1, '1', true])).toBeFalsy();
+  expect(hasArrayDuplicates([0, false, ''])).toBeFalsy();
+
+  // Objects (always unique unless same reference)
+  const obj1 = { x: 1 };
+  const obj2 = { x: 1 };
+  expect(hasArrayDuplicates([obj1, obj2])).toBeFalsy(); // different objects
+  expect(hasArrayDuplicates([obj1, obj1])).toBeTruthy(); // same reference
+
+  // Error cases
+  expect(() => hasArrayDuplicates(null as any)).toThrow('expected array');
+  expect(() => hasArrayDuplicates(undefined as any)).toThrow('expected array');
+  expect(() => hasArrayDuplicates({} as any)).toThrow('expected array');
+  expect(() => hasArrayDuplicates('string' as any)).toThrow('expected array');
+});
+
+test('hasArrayDuplicates with keyFn', () => {
+  // Using keyFn to check duplicates by object property
+  const users = [
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 1, name: 'Alice Clone' }
+  ];
+  
+  expect(hasArrayDuplicates(users, user => user.id)).toBeTruthy(); // duplicate id
+  expect(hasArrayDuplicates(users, user => user.name)).toBeFalsy(); // all names unique
+
+  // Using keyFn for case-insensitive string comparison
+  expect(hasArrayDuplicates(['Hello', 'world', 'HELLO'], s => s.toLowerCase())).toBeTruthy();
+  expect(hasArrayDuplicates(['Hello', 'World'], s => s.toLowerCase())).toBeFalsy();
+
+  // Using keyFn to extract specific values
+  const items = [
+    { type: 'A', value: 10 },
+    { type: 'B', value: 20 },
+    { type: 'A', value: 30 }
+  ];
+  
+  expect(hasArrayDuplicates(items, item => item.type)).toBeTruthy(); // duplicate type 'A'
+  expect(hasArrayDuplicates(items, item => item.value)).toBeFalsy(); // all values unique
+
+  // Using keyFn with numbers
+  expect(hasArrayDuplicates([1.1, 2.2, 1.9], n => Math.floor(n))).toBeTruthy(); // floors to 1, 2, 1
+  expect(hasArrayDuplicates([1.1, 2.2, 3.3], n => Math.floor(n))).toBeFalsy(); // floors to 1, 2, 3
+
+  // Edge cases with keyFn
+  expect(hasArrayDuplicates([], user => user)).toBeFalsy();
+  expect(hasArrayDuplicates([{ x: 1 }], item => item.x)).toBeFalsy();
 });

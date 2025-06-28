@@ -53,6 +53,25 @@ function isPlainObjectWhereEvery<T>(o: unknown, predicate: (v: unknown) => v is 
   return isPlainObject(o) && Object.values(o).every(predicate);
 }
 
+function hasArrayDuplicates<T, K = T>(
+  array: readonly T[],
+  keyFn: (item: T) => K = (x => x as unknown as K)
+): boolean {
+  if (!Array.isArray(array)) {
+    throw new Error('expected array');
+  }
+  
+  if (array.length < 2) return false;
+  
+  const seen = new Set<K>();
+  for (const item of array) {
+    const key = keyFn(item);
+    if (seen.has(key)) return true;
+    seen.add(key);
+  }
+  return false;
+}
+
 export enum ComparisonResult {
   Equal = 'EQUAL',
   NotEqual = 'NOT_EQUAL',
@@ -591,4 +610,5 @@ export {
   partitionProperties,
   unique,
   makeCopyOnWriteObjectSetter,
+  hasArrayDuplicates,
 }

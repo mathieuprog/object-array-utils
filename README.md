@@ -186,7 +186,15 @@ base  // { a: 1,  b: 2 }
 
 // Further updates mutate the same draft
 set('b', 99) === draft; // true
-```
+
+import { hasArrayDuplicates } from 'object-array-utils';
+
+hasArrayDuplicates([1, 2, 3]) // false
+hasArrayDuplicates([1, 2, 1]) // true
+hasArrayDuplicates(
+  [{ name: 'John', age: 27 }, { name: 'James', age: 42 }, { name: 'Joe', age: 27 }],
+  ({ age }) => age
+) // true
 
 ## Limitations
 
