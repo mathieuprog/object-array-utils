@@ -13,7 +13,7 @@ function isPrimitive(v: unknown): v is Primitive {
   return v == null || (typeof v !== 'object' && typeof v !== 'function');
 }
 
-function isNullOrUndefined(v: unknown): v is null | undefined {
+function isNullish(v: unknown): v is null | undefined {
   return v == null; // matches both null and undefined
 }
 
@@ -575,7 +575,7 @@ export {
   isArrayWhereEvery,
   isEmptyArray,
   isEmptyPlainObject,
-  isNullOrUndefined,
+  isNullish,
   isPlainObject,
   isPlainObjectWhereEvery,
   isPlainObjectSubset,

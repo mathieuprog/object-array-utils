@@ -23,10 +23,10 @@ import { isEmptyArray } from 'object-array-utils';
 
 isEmptyArray([]) // true
 
-import { isNullOrUndefined } from 'object-array-utils';
+import { isNullish } from 'object-array-utils';
 
-isNullOrUndefined(null) // true
-isNullOrUndefined(undefined) // true
+isNullish(null) // true
+isNullish(undefined) // true
 
 import { hasProperty } from 'object-array-utils';
 
